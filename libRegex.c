@@ -62,11 +62,8 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 		PyList_SET_ITEM(recordedFields, 0, field);
 		return recordedFields;
 	}*/
-	printf("before\n");
 	indFields = match(regex,tomatch,fields,&totalfields);
-	printf("total %d\n",totalfields);
 	freeFields(fields,indFields+1);
-	printf("afterfree\n");	
 	if(indFields>=0)
 	{
 		int index = 0;
@@ -77,7 +74,6 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 			while(fields[i].subfields!=NULL){
 				if((fields[i].subfields)->groupindex!=index){
 					PyList_SET_ITEM(recordedFields, index, string);
-					//printf("%s\n",PyString_AsString(string));
 					string = PyString_FromString("");
 					index++;
 				}				
@@ -114,22 +110,6 @@ void retField(PyObject **string,Fields* field,Subfield* sub){
 	sub = NULL;
 
 }
-
-/*int totalfields(Fields* fields,int nbfields){
-	int total=0;
-	int i;
-	Subfield* sub;
-	for (i=0;i<=nbfields;i++)
-	{
-		sub = fields[i].subfields;
-		while(sub!=NULL){
-			sub = sub->next;
-			total++;
-		}
-	}
-	//printf("total %d\n",total);
-	return total;
-}*/
 
 
 
@@ -323,105 +303,7 @@ int parsegroup(char* token,char ** groups)
 		nbdifferentfield++;
 	}
 	return nbdifferentfield;
-}/*
-char* parsegroup(char* token,char ** groups)
-{
-	int nbdifferentfield=0;
-	char* tokencopy = token;
-	char* dot;
-	char* newtoken;
-	int size = strlen(token);
-	int i;
-	int m,M,res;
-	int index=0;
-	int wasdot;
-	
-	dot = strchr(token,'.');
-	while(dot != NULL){
-		if(dot == token){
-			nbdifferentfield++;
-			token+=1;
-		}
-		else{
-			nbdifferentfield++;
-			if(isalnum((dot-1)[0]))
-				nbdifferentfield++;
-			token = dot+1;
-		}
-		dot = strchr(token,'.');
-
-	}
-	if(strlen(token)>1){
-		if(isalnum(token[0])){
-			nbdifferentfield++;
-		}
-		else{
-			dot = strchr(token,'}');
-
-			if(strlen(dot)>1){
-				if(dot!=NULL && isalnum(dot[1]))
-					nbdifferentfield++;
-				else
-					nbdifferentfield = -1; 
-			}
-		}
-
-	}
-	token = tokencopy;
-	printf("nfields %d\n",nbdifferentfield);
-
-	if(nbdifferentfield>=MaxFields)
-		return NULL;
-	else if(nbdifferentfield>1){
-		char* newtoken = malloc((nbdifferentfield*2+size+1)*sizeof(char));
-		memset(newtoken,0,nbdifferentfield*2+size+1);
-		for(i=0;i<size;i++){
-			if(i==0){
-				newtoken[index] = '(';
-				index++;
-			}
-			if(token[i] == '.' && index>0 &&newtoken[index-1]!='('){
-				if(i>0){
-					newtoken[index] = ')';
-					index++;	
-				}
-				newtoken[index] = '(';
-				newtoken[index+1] = '.';
-				index +=2;
-			}
-			else if((token[i] == '}'&& isalnum(token[i+1]))){ //|| (i>0 && token[i]!='{' && token[i-1]=='.')){
-				newtoken[index] = token[i];
-				newtoken[index+1] = ')';
-				index +=2;
-				if(index<nbdifferentfield*2+size-1){
-					newtoken[index] = '(';			
-					index ++;
-					}
-			}
-			else{
-				newtoken[index] = token[i];
-				index++;
-			}
-
-		}
-		newtoken[index]=')';
-		index++;
-		
-		return newtoken;
-	}
-	else if(nbdifferentfield==-1){
-		return NULL;
-	}
-	else{
-		char* newtoken = malloc((nbdifferentfield*2+size+1)*sizeof(char));
-		memset(newtoken,0,nbdifferentfield*2+size+1);
-		newtoken[0]='(';
-		strcat(newtoken,token);
-		newtoken[nbdifferentfield*2+size-1]=')';
-		return newtoken;
-	}
 }
-*/
 
 /*
 	rollBack
@@ -540,11 +422,9 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 	int rollret = 0;
 	char* tomatchcopy = tomatch;
 	int retvalue =0;
-	char *group;
 	char* tempgroup;
 	char *str1;
 	char* token;
-	int tofree = 0;
 	char* groups[MaxFields];
 	int nbsubtoken = 0;
 	int i;
@@ -561,38 +441,38 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		}
 		
 		for(i=0;i<nbsubtoken;i++){
-		token=groups[i];
-		//Very first field
-		if(fields[ind].set==0){
-			//printf("prem %s\n",token);
-			retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);
-			if(retvalue<0){
-				freeFields(fields,ind+1);
-				return retvalue;
-			}
-			size+=strlen(token);
-		}
+		    token=groups[i];
+
+    		//Very first field
+	    	if(fields[ind].set==0){
+		    	retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);
+			    if(retvalue<0){
+		    		freeFields(fields,ind+1);
+		    		return retvalue;
+		    	}
+		    	size+=strlen(token);
+		    }
 
 		
-		//New type of field
-		else if(fields[ind].isStatic != isStatic(token,'.')){
-			if(fields[ind].isStatic){
-				setFieldvalue(&fields[ind]);
-				if(ind==0){
-					posmatch = strstr(tomatch,fields[ind].value);
-					if(posmatch!=tomatch){
-						freeFields(fields,ind+1);
-						return -1;
-					}
-					else{
-						setAdd(&fields[ind],posmatch);
-						tomatch = posmatch + fields[ind].len;
-					}
-				}
-				else{	
+    		//New type of field
+    		else if(fields[ind].isStatic != isStatic(token,'.')){
+    			if(fields[ind].isStatic){
+    				setFieldvalue(&fields[ind]);
+    				if(ind==0){
+    					posmatch = strstr(tomatch,fields[ind].value);
+    					if(posmatch!=tomatch){
+    						freeFields(fields,ind+1);
+    						return -1;
+    					}
+    					else{
+    						setAdd(&fields[ind],posmatch);
+	    					tomatch = posmatch + fields[ind].len;
+    					}
+    				}
+    				else{	
 						posmatch = strstr(tomatch+fields[ind-1].min,fields[ind].value);
-						if(posmatch == NULL){
-							freeFields(fields,ind+1);
+    					if(posmatch == NULL){
+						   	freeFields(fields,ind+1);
 							return -2;
 						}
 						else if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
@@ -606,38 +486,35 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 						}
 						else{
 							fields[ind-1].max = (int)(posmatch-tomatch);
-							//printf("inse\n");
 							setAdd(&fields[ind],posmatch);
 							tomatch = posmatch + fields[ind].len;
 						}
-				}
-			}
+				    }
+			    }
 			//TODO
-			size = 0;
-			ind++;
-			if(ind>=MaxFields){
-				freeFields(fields,ind);
-				return -3;
-			}
-			retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);
-			if(retvalue<0){
-				freeFields(fields,ind+1);
-				return retvalue;
-			}
-			size+=strlen(token);
-			//break;
-		}
+		    	size = 0;
+		    	ind++;
+		    	if(ind>=MaxFields){
+		    		freeFields(fields,ind);
+		    		return -3;
+	    		}
+		    	retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);
+	    		if(retvalue<0){
+		    		freeFields(fields,ind+1);
+		    		return retvalue;
+		    	}
+		    	size+=strlen(token);
+		    }
 
-		//Same type of field => push the subfield in the chainlist 
-		else{
-			//printf("else add token %s\n",token);
-			retvalue = addSubfield(&fields[ind],token,maxlimit,*groupindex);
-			if(retvalue<0){
+	    	//Same type of field => push the subfield in the chainlist 
+	    	else{
+		    	retvalue = addSubfield(&fields[ind],token,maxlimit,*groupindex);
+		    	if(retvalue<0){
 				freeFields(fields,ind+1);
-				return retvalue;
-			}
-			size+=strlen(token);
-		}
+		        		return retvalue;
+		    	}
+		    	size+=strlen(token);
+		    }
 		}
 
 		++*groupindex;
