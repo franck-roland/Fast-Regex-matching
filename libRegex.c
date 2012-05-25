@@ -14,7 +14,7 @@ static PyMethodDef regex_methods[] = {
   {NULL, NULL}
 };
 //+---------------------------------------------------------------------------+
-//| initlibScoreComputation : Python will use this function to init the module
+//| initlibRegex : Python will use this function to init the module
 //+---------------------------------------------------------------------------+
 PyMODINIT_FUNC init_libRegex(void) {
 	PyObject *d = PyDict_New();
