@@ -3,30 +3,6 @@
 
 
 /*
-	parseVariableFields
-	return value:
-		error code:
-			-11 : wrong format
-			-12 : min field to large or max field to large
-			-13 : max < min
-			-4 : 
-		normal return:
-			 0 : everything ok
-	default values:
-		____________________
-		min = 0  	 		|
-				 	 		|  no constraints
-		max = len(message)  |
-		____________________|
-		
-		Constraints : 
-			max >= min
-			if max == min => fields of len max
-		
-*/
-
-
-/*
 *	parsegroup
 *	
 */
@@ -338,7 +314,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 			posmatch = strstr(tomatch,fields[ind].value);
 			if(posmatch!=tomatch){
 				freeFields(fields,ind+1);
-				return -1;
+				return -2;
 			}
 			else{
 				setAdd(&fields[ind],posmatch);

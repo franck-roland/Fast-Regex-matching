@@ -2,6 +2,8 @@
 #define MANIPULATE_H
 #include "struct.h"
 
+extern char* mError;
+
 int freeSubfields(Subfield *sub);
 void freeFields(Fields* fields, int indFields);
 

@@ -8,7 +8,7 @@
 #define MaxLen 5
 #define MaxFields 5000
 
-static char* mError = NULL;
+extern char* mError;
 
 typedef struct Subfield Subfield;
 struct Subfield{

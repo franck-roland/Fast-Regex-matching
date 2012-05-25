@@ -8,8 +8,6 @@ extern char* mError;
 
 
 int match(char* s,char* tomatch,Fields* fields,int*);
-int parse(char* regex,char* delim);
-int parseVariableFields(char *pAdd, int* m, int* M);
 
 
 #endif

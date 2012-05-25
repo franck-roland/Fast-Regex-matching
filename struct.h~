@@ -4,7 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-static char* mError = NULL;
+
+#define MaxLen 5
+#define MaxFields 5000
+
+extern char* mError = NULL;
 
 typedef struct Subfield Subfield;
 struct Subfield{

@@ -1,4 +1,28 @@
 #include "manipulate.h"
+
+char* mError = NULL;
+/*
+	parseVariableFields
+	return value:
+		error code:
+			-11 : wrong format
+			-12 : min field to large or max field to large
+			-13 : max < min
+			-4 : 
+		normal return:
+			 0 : everything ok
+	default values:
+		____________________
+		min = 0  	 		|
+				 	 		|  no constraints
+		max = len(message)  |
+		____________________|
+		
+		Constraints : 
+			max >= min
+			if max == min => fields of len max
+		
+*/
 int parseVariableFields(char *pAdd, int* m, int* M){
 	
 	int i;	
@@ -213,8 +237,10 @@ Subfield* newSubfield( unsigned int offset, char* v,int isStatic, int* min, int*
 			subfield->max = maxlimit;			
 			retparse = parseVariableFields(v,&(subfield->min),&(subfield->max));
 			free(v);
-			if(retparse<0)
+			if(retparse<0){
+				free(subfield);
 				return NULL;
+			}
 			subfield->len = subfield->min;
 			*min += subfield->min;
 			*max += subfield->max;

@@ -3,7 +3,7 @@
 
 
 PyObject *exception = NULL;
-//extern char* mError;
+
 static PyMethodDef regex_methods[] = {
   {"match", py_match, METH_VARARGS},
   {NULL, NULL}

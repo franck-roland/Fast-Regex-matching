@@ -2,6 +2,7 @@
 #define MANIPULATE_H
 #include "struct.h"
 
+
 int freeSubfields(Subfield *sub);
 void freeFields(Fields* fields, int indFields);
 
