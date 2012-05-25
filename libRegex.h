@@ -124,7 +124,7 @@ int addSubfield(Fields* field, char* token,int maxlimit,int groupindex){
 void adjustfield(Fields* field){
 	if(!(field->isStatic)){
 		Subfield* sub = field->subfields;	
-		int delta = field->max - field->min;
+		int delta = field->len - field->min;
 		int newdelta;
 		int newoffset = 0;
 		while(sub!=NULL){
@@ -137,7 +137,6 @@ void adjustfield(Fields* field){
 					delta-=newdelta;
 				}
 				else if(delta<newdelta){
-					//printf("delta in%d\n",delta);
 					sub->len+=delta;
 					newoffset+=delta;
 					delta=0;

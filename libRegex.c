@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include <Python.h>
 #include "libRegex.h"
-//#include "commonLib.h"
 
 
 
@@ -26,8 +25,9 @@ PyMODINIT_FUNC init_libRegex(void) {
     	exception = Py_BuildValue("s", "_libRegex.error");
 	#endif
     	PyDict_SetItemString(d, "error", exception);
-	printf("init\n");
 }
+
+
 PyObject* py_match(PyObject* self, PyObject* args) {
 	char errormsg[512];
 	char* tomatch;
@@ -36,22 +36,18 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 	int i;
 	int totalfields=0;
 	Fields fields[MaxFields];
-	//printf("inbegin\n");
+
 	for(i = 0; i<MaxFields;i++){
-		fields[i].set = 0;//return args;		
+		fields[i].set = 0;
 		fields[i].subfields = NULL;
 		fields[i].lastfields = NULL;
 	}
-	printf("before1\n");
 	PyObject *recordedFields = NULL;
-	printf("before2\n");
 	// Converts the arguments
-	printf("%s \n",PyString_AsString(PyObject_Str(args)));
   	if (!PyArg_ParseTuple(args, "ss", &regex, &tomatch)) {
 	    	PyErr_SetString(PyExc_TypeError, "Error while parsing the arguments provided to py_getHighestEquivalentGroup");
     		return NULL;
   	}
-	///printf("%s \n",PyString_AsString(args));
 	/*if(strcmp(regex,tomatch)==0){
 		recordedFields = PyList_New(1);
 		PyObject *field = Py_BuildValue("s", regex);
@@ -221,7 +217,6 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 	}
 	*m = min;
 	*M = max;
-	//printf("min %d max %d\n",min,max); 
 	return ind;
 }
 
@@ -316,36 +311,47 @@ int parsegroup(char* token,char ** groups)
 		|				|
 	previous		too long
 */
-int rollBack(unsigned int shift, int ind,Fields* fields, char* tomatch, int first)
+int rollBack(unsigned int shift, int ind,Fields* fields, char* tomatch, int first, int lastvar)
 {
 	char* nextmatching;
 	Fields* stat = (&fields[ind+1]);
 	Fields* var = (&fields[ind]);
 	int retvalue = 0;
-
 	if(first){
 		if(ind >= 2){
 			while(1){
-				shift = (unsigned int)(stat->add - var->add - var->max);
-				retvalue = rollBack(shift, ind - 2,fields,tomatch,0);
+                if(!lastvar)
+				    shift = (unsigned int)(stat->add - var->add - var->max);
+				retvalue = rollBack(shift, ind - 2,fields,tomatch,0,0);
 				if( retvalue == 0){
 					var->add = fields[ind-1].add + fields[ind-1].len;
-					if(stat->add - var->add >= var->min){
-						var->len = (unsigned int)(stat->add - var->add);
-						return 0;
-					}
-					else{
-						nextmatching = strstr(var->add + var->min, stat->value);
-						if (nextmatching == NULL){
-							return -1;
-						}
-						else{
-							stat->add = nextmatching;
-							var->len = (unsigned int)(nextmatching - var->add);
-							if(var->len<=var->max)
-								return 0;
-						}
-					}
+                    if(!lastvar){
+				    	if(stat->add - var->add >= var->min){
+				    		var->len = (unsigned int)(stat->add - var->add);
+				    		return 0;
+				    	}
+				    	else{
+				    		nextmatching = strstr(var->add + var->min, stat->value);
+				    		if (nextmatching == NULL){
+				    			return -1;
+				    		}
+				    		else{
+				    			stat->add = nextmatching;
+				    			var->len = (unsigned int)(nextmatching - var->add);
+				    			if(var->len<=var->max)
+				    				return 0;
+				    		}
+				    	}
+                    }
+                    else{
+                        if(strlen(stat->add) >= var->min){
+				    		var->len = (unsigned int)(strlen(stat->add));
+				    		return 0;
+				    	}
+                        else{
+                            return -1;
+                        }
+                    }
 				}
 				else
 					return -1;
@@ -369,7 +375,7 @@ int rollBack(unsigned int shift, int ind,Fields* fields, char* tomatch, int firs
 		}
 		else if(ind >= 2){
 			shift = (unsigned int)(nextmatching - var->add - var->max);
-			retvalue = rollBack(shift, ind - 2,fields,tomatch,0);
+			retvalue = rollBack(shift, ind - 2,fields,tomatch,0,0);
 			if( retvalue == 0){
 				var->add = fields[ind-1].add + fields[ind-1].len;
 				if(nextmatching - var->add >= var->min){
@@ -476,25 +482,24 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 							return -2;
 						}
 						else if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
-							rollret = rollBack(0, ind-1,fields,tomatchcopy, 1);
+							rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
 							if(rollret!=0){
 								freeFields(fields,ind+1);
 								return -2;
 							}
-							fields[ind-1].max = (int)(fields[ind].add-fields[ind-1].add);
+							//fields[ind-1].len = (int)(fields[ind].add-fields[ind-1].add);
 							tomatch = fields[ind].add+fields[ind].len;
 						}
 						else{
-							fields[ind-1].max = (int)(posmatch-tomatch);
+							fields[ind-1].len = (int)(posmatch-tomatch);
 							setAdd(&fields[ind],posmatch);
 							tomatch = posmatch + fields[ind].len;
 						}
 				    }
 			    }
-			//TODO
 		    	size = 0;
 		    	ind++;
-		    	if(ind>=MaxFields){
+		    	if(ind>=MaxFields-1){
 		    		freeFields(fields,ind);
 		    		return -3;
 	    		}
@@ -540,25 +545,42 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 					freeFields(fields,ind+1);
 					return -2;
 				}
-				else if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
-					rollret = rollBack(0, ind-1,fields,tomatchcopy, 1);
+                    
+                if(strcmp(tomatch+(strlen(tomatch)-strlen(fields[ind].value)), fields[ind].value) != 0){
+                    freeFields(fields,ind+1);
+					return -2;
+                }
+                else{
+                    posmatch = tomatch+(strlen(tomatch)-strlen(fields[ind].value));
+                    setAdd(&fields[ind],posmatch);
+                }
+                printf("%s\n",tomatch+(strlen(tomatch)-strlen(fields[ind].value)));
+				if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
+                    printf("in\n");
+					rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
 					if(rollret!=0){
 						freeFields(fields,ind+1);
 						return -2;
 					}
-					fields[ind-1].max = (int)(fields[ind].add-fields[ind-1].add);
+					//fields[ind-1].len = (int)(fields[ind].add-fields[ind-1].add);
 					tomatch = fields[ind].add+fields[ind].len;
 				}
 				else{
-					fields[ind-1].max = (int)(posmatch-tomatch);
+					fields[ind-1].len = (int)(posmatch-tomatch);
 					setAdd(&fields[ind],posmatch);
 					tomatch = posmatch + fields[ind].len;
 				}
 		}
 	}
 	else{
-		fields[ind].max = strlen(tomatch);
-
+        fields[ind].len =strlen(tomatch);
+		if(strlen(tomatch)>fields[ind].max){
+            rollret = rollBack(strlen(tomatch)-fields[ind].max, ind,fields,tomatchcopy, 1,1);
+            if(rollret!=0){
+               freeFields(fields,ind+1);
+				return -2; 
+            }
+        }
 
 	}
 	return ind;
