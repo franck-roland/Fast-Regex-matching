@@ -99,7 +99,7 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 			else{
 				char mismatch[]=" expected but found ";
 				char in[]=" in ";
-				char rem[]=".\nUsage Reminder for variable field: . alone or ._min,max (space) where min<max and min and max are two numbers of 5digits maximum.\nDo not forget the space after the max";
+				char rem[]=".\nUsage Reminder for variable field: . alone or .{min,max} or .{size} where min<max and min and max are two numbers of 5digits maximum and size is a fixed size for the variable field.";
 				mError = (char* )malloc((strlen(pAdd-ind)+strlen(in)+strlen(mismatch)+3+strlen(rem))*sizeof(char));
 				memset(mError,0,(strlen(pAdd-ind)+strlen(in)+strlen(mismatch)+3+strlen(rem)));
 				mError[0] = format[i];
