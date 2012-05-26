@@ -236,7 +236,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		
 		for(i=0;i<nbsubtoken;i++){
 		    token=groups[i];
-		printf("substring %s\n",token);
+		//printf("substring %s\n",token);
     		//Very first field
 	    	if(fields[ind].set==0){
 		    	retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);

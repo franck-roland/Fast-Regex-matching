@@ -9,7 +9,6 @@
 
 char* createtoken(unsigned int size, char* from){
 	char* nt;
-
 	nt = (char *) malloc (size*sizeof(char));
 	memset(nt,0,size);
 	strncpy(nt,from,size-1);

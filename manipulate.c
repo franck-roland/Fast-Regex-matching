@@ -98,13 +98,16 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 			}
 			else{
 				char mismatch[]=" expected but found ";
+				char in[]=" in ";
 				char rem[]=".\nUsage Reminder for variable field: . alone or ._min,max (space) where min<max and min and max are two numbers of 5digits maximum.\nDo not forget the space after the max";
-				mError = (char* )malloc((strlen(mismatch)+3+strlen(rem))*sizeof(char));
+				mError = (char* )malloc((strlen(pAdd-ind)+strlen(in)+strlen(mismatch)+3+strlen(rem))*sizeof(char));
+				memset(mError,0,(strlen(pAdd-ind)+strlen(in)+strlen(mismatch)+3+strlen(rem)));
 				mError[0] = format[i];
-				strncpy(mError+1,mismatch,strlen(mismatch));
+				strcat(mError,mismatch);
 				mError[strlen(mismatch)+1] = pAdd[0];
-				strncpy(mError+strlen(mismatch)+2,rem,strlen(rem));
-				mError[strlen(mismatch)+strlen(rem)+2] = '\x00';
+				strcat(mError,in);
+				strcat(mError,pAdd-ind);
+				strcat(mError,rem);
 				return -11;
 			}
 		}
