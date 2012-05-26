@@ -17,9 +17,9 @@ PyMODINIT_FUNC init_libRegex(void) {
 	#if PYTHON_API_VERSION >= 1007
 	    exception = PyErr_NewException("_libRegex.error", NULL, NULL);
 	#else
-    	exception = Py_BuildValue("s", "_libRegex.error");
+		exception = Py_BuildValue("s", "_libRegex.error");
 	#endif
-    	PyDict_SetItemString(d, "error", exception);
+		PyDict_SetItemString(d, "error", exception);
 }
 
 
@@ -30,6 +30,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 	int indFields;
 	int i;
 	int totalfields=0;
+	int exactlymatch = 0;
 	Fields fields[MaxFields];
 
 	for(i = 0; i<MaxFields;i++){
@@ -39,7 +40,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 	}
 	PyObject *recordedFields = NULL;
 	// Converts the arguments
-  	if (!PyArg_ParseTuple(args, "ss", &regex, &tomatch)) {
+  	if (!PyArg_ParseTuple(args, "ssi", &regex, &tomatch, &exactlymatch)) {
 	    	PyErr_SetString(PyExc_TypeError, "Error while parsing the arguments provided to py_getHighestEquivalentGroup");
     		return NULL;
   	}
@@ -96,6 +97,8 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 	}
 	return 	NULL;
 }
+
+
 void retField(PyObject **string,Fields* field,Subfield* sub){
 	field->subfields = sub->next;
 	PyObject *toRet = Py_BuildValue("s#", field->add+sub->offset, sub->len);

@@ -22,7 +22,7 @@ for r in reg:
     print "______________________"
     print "regex: "+r
     try:
-        l = _libRegex.match(r, PERSO)
+        l = _libRegex.match(r, PERSO, 0)
         if len(r) < 100:
             print r
 	print "SUCCESS"

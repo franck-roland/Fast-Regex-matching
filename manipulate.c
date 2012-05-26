@@ -2,7 +2,6 @@
 
 void dealloc(void **s)
 {
-	printf("indealloc\n");
 	if(*s!=NULL){
 		free(*s);
 		*s = NULL;
@@ -45,7 +44,8 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 	char format2[]=".{0}";
 	int ismin = 1;
 	int nextseparator = 0;
-	printf("to parse %s\n",pAdd);
+	//printf("to parse %s\n",pAdd);
+	
 	for(i=0;i<strlen(format);i++){
 		if(pAdd[0]==0)
 			break;
@@ -110,11 +110,11 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 		}
 	}
 	if(max < min){
-		char maxmin[]="The maximum cannot be lower than the minimum";
-		mError = (char* )malloc((ind+strlen(maxmin)+1)*sizeof(char));
+		char maxmin[]="The maximum cannot be lower than the minimum : ";
+		mError = (char* )malloc((strlen(pAdd-ind)+strlen(maxmin)+1)*sizeof(char));
 		memset(mError,0,ind+strlen(maxmin));
 		strcat(mError,maxmin);
-		strncat(mError,pAdd-ind,ind-1);
+		strcat(mError,pAdd-ind);
 		return -13;
 	}
 	*m = min;
@@ -123,7 +123,7 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 }
 
 int freeSubfields(Subfield *sub){
-	printf("subfree len %d offset %d\n",sub->len,sub->offset);
+	//printf("subfree len %d offset %d\n",sub->len,sub->offset);
 	dealloc((void **)&sub->value);
 	if(sub->next!=NULL){	
 		//if(freeSubfields(sub->next)==0)
@@ -136,7 +136,7 @@ int freeSubfields(Subfield *sub){
 
 void freeFields(Fields* fields, int indFields){
 	while (indFields>0){
-		printf("\nFREE %d of length %d\n",indFields,fields[indFields-1].len);
+		//printf("\nFREE %d of length %d\n",indFields,fields[indFields-1].len);
 		//printf("min %d max %d\n",fields[indFields-1].min,fields[indFields-1].max);
 		dealloc((void **)&fields[indFields-1].value);
 				//if((&fields[indFields-1])->subfields==NULL)

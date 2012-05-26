@@ -67,8 +67,10 @@ int parsegroup(char* token,char ** groups)
 						
 					}
 					ntsize = (unsigned int)(nextdot - token + 1);
-					groups[nbdifferentfield] = createtoken(ntsize,token);
-					nbdifferentfield++;
+					if(ntsize>1){
+						groups[nbdifferentfield] = createtoken(ntsize,token);
+						nbdifferentfield++;
+					}
 					token = nextdot;
 			}
 			dot = nextdot;
