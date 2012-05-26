@@ -3,7 +3,6 @@
 
 #include "struct.h"
 #include "manipulate.h"
-extern char* mError;
 
 
 

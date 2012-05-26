@@ -92,7 +92,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 		PyErr_SetObject(exception, Py_BuildValue("s#",errormsg,strlen(errormsg) ));
 	else{
 		PyErr_SetObject(exception, Py_BuildValue("s#s",errormsg,strlen(errormsg), mError));
-		free(mError);
+		dealloc((void **)&mError);
 	}
 	return 	NULL;
 }
@@ -100,8 +100,7 @@ void retField(PyObject **string,Fields* field,Subfield* sub){
 	field->subfields = sub->next;
 	PyObject *toRet = Py_BuildValue("s#", field->add+sub->offset, sub->len);
 	PyString_ConcatAndDel(string,toRet);
-	free(sub);
-	sub = NULL;
+	dealloc(&sub);
 
 }
 

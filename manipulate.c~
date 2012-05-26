@@ -1,5 +1,14 @@
 #include "manipulate.h"
 
+void dealloc(void **s)
+{
+	printf("indealloc\n");
+	if(*s!=NULL){
+		free(*s);
+		*s = NULL;
+	}
+
+}
 char* mError = NULL;
 /*
 	parseVariableFields
@@ -102,10 +111,10 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 	}
 	if(max < min){
 		char maxmin[]="The maximum cannot be lower than the minimum";
-		mError = (char* )malloc((ind+strlen(maxmin))*sizeof(char));
-
-		strncpy(mError,pAdd-ind,ind-1);
-		mError[ind-1] = '\x00';
+		mError = (char* )malloc((ind+strlen(maxmin)+1)*sizeof(char));
+		memset(mError,0,ind+strlen(maxmin));
+		strcat(mError,maxmin);
+		strncat(mError,pAdd-ind,ind-1);
 		return -13;
 	}
 	*m = min;
@@ -115,10 +124,7 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 
 int freeSubfields(Subfield *sub){
 	printf("subfree len %d offset %d\n",sub->len,sub->offset);
-	if(sub->value!=NULL){
-		free(sub->value);
-		sub->value = NULL;
-	}
+	dealloc(&sub->value);
 	if(sub->next!=NULL){	
 		//if(freeSubfields(sub->next)==0)
 		freeSubfields(sub->next);
@@ -132,12 +138,9 @@ void freeFields(Fields* fields, int indFields){
 	while (indFields>0){
 		printf("\nFREE %d of length %d\n",indFields,fields[indFields-1].len);
 		//printf("min %d max %d\n",fields[indFields-1].min,fields[indFields-1].max);
-		if(fields[indFields-1].value != NULL){
-				free(fields[indFields-1].value);
+		dealloc(&fields[indFields-1].value);
 				//if((&fields[indFields-1])->subfields==NULL)
 					//printf("soucis\n");
-				
-		}
 		if(fields[indFields-1].subfields != NULL)
 			freeSubfields((&fields[indFields-1])->subfields);
 		indFields--;	
@@ -238,9 +241,9 @@ Subfield* newSubfield( unsigned int offset, char* v,int isStatic, int* min, int*
 			subfield->min = 0;
 			subfield->max = maxlimit;			
 			retparse = parseVariableFields(v,&(subfield->min),&(subfield->max));
-			free(v);
+			dealloc(&v);
 			if(retparse<0){
-				free(subfield);
+				dealloc(&subfield);
 				return NULL;
 			}
 			subfield->len = subfield->min;

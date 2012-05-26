@@ -2,7 +2,7 @@
 #define MANIPULATE_H
 #include "struct.h"
 
-
+void dealloc(void**);
 int freeSubfields(Subfield *sub);
 void freeFields(Fields* fields, int indFields);
 
