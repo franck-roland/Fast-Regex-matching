@@ -3,7 +3,7 @@
 
 
 PyObject *exception = NULL;
-char* mError = NULL;
+
 static PyMethodDef regex_methods[] = {
   {"match", py_match, METH_VARARGS},
   {NULL, NULL}
@@ -82,15 +82,18 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 		case -11 : strcpy(errormsg,"Format Error"); break;
 		case -2 : strcpy(errormsg, "Cannot match the string with the regex"); break;
 		case -3 : strcpy(errormsg, "Too much different fields"); break;
+		case -4 : strcpy(errormsg, "The regex is empty"); break;
+		case -5 : strcpy(errormsg, "The chain to match is empty"); break;
 		case -12 : strcpy(errormsg, "One variable value is to large. 5 digit maximum"); break;
 		case -13 : strcpy(errormsg, "One min greater than max"); break;
 		default : strcpy(errormsg, "Error"); break;
 	}
 	if(mError == NULL)
 		PyErr_SetObject(exception, Py_BuildValue("s#",errormsg,strlen(errormsg) ));
-	else
+	else{
 		PyErr_SetObject(exception, Py_BuildValue("s#s",errormsg,strlen(errormsg), mError));
 		free(mError);
+	}
 	return 	NULL;
 }
 void retField(PyObject **string,Fields* field,Subfield* sub){

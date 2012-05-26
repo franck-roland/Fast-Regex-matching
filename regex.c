@@ -36,7 +36,7 @@ int parsegroup(char* token,char ** groups)
 			token = dot;
 		}
 		else{
-			//There is no more variable fields
+			//There are no more variable fields
 			if(nextdot == NULL){
 					if(nextbrack==NULL){
 						ntsize = 2;
@@ -51,6 +51,7 @@ int parsegroup(char* token,char ** groups)
 						token = nextbrack+1;
 					}
 			}
+			//There exist other variable fields
 			else{
 					if(nextbrack==NULL || (nextbrack >= nextdot)){
 						ntsize = 2;
@@ -66,8 +67,10 @@ int parsegroup(char* token,char ** groups)
 						
 					}
 					ntsize = (unsigned int)(nextdot - token + 1);
-					groups[nbdifferentfield] = createtoken(ntsize,token);
-					nbdifferentfield++;
+					if(ntsize>1){
+						groups[nbdifferentfield] = createtoken(ntsize,token);
+						nbdifferentfield++;
+					}
 					token = nextdot;
 			}
 			dot = nextdot;
@@ -216,7 +219,10 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 	char* groups[MaxFields];
 	int nbsubtoken = 0;
 	int i;
-
+	if(strlen(regex)<=0)
+		return -4;
+	if(strlen(tomatch)<=0)
+		return -5;
 	for(str1 = regex;;str1 = NULL){
 		tempgroup = strtok(str1,border);
 		if (tempgroup==NULL)
@@ -230,7 +236,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		
 		for(i=0;i<nbsubtoken;i++){
 		    token=groups[i];
-
+		printf("substring %s\n",token);
     		//Very first field
 	    	if(fields[ind].set==0){
 		    	retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);
@@ -250,7 +256,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
     					posmatch = strstr(tomatch,fields[ind].value);
     					if(posmatch!=tomatch){
     						freeFields(fields,ind+1);
-    						return -1;
+    						return -2;
     					}
     					else{
     						setAdd(&fields[ind],posmatch);
@@ -306,8 +312,9 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 
 		++*groupindex;
 	}
-
+	/*******************************************************/
 	//last field
+	//Last field is static
 	if(fields[ind].isStatic){
 		setFieldvalue(&fields[ind]);
 		if(ind==0){
@@ -354,6 +361,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 				}
 		}
 	}
+	//Last field is dynamic
 	else{
         fields[ind].len =strlen(tomatch);
 		if(strlen(tomatch)>fields[ind].max){
@@ -363,6 +371,10 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 				return -2; 
             }
         }
+		else if (strlen(tomatch)<fields[ind].min){
+            freeFields(fields,ind+1);
+			return -2;
+		}
 
 	}
 	freeFields(fields,ind+1);

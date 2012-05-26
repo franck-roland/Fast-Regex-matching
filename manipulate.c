@@ -13,8 +13,8 @@ char* mError = NULL;
 			 0 : everything ok
 	default values:
 		____________________
-		min = 0  	 		|
-				 	 		|  no constraints
+		min = 0  	    |
+				    |  no constraints
 		max = len(message)  |
 		____________________|
 		
@@ -36,7 +36,7 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 	char format2[]=".{0}";
 	int ismin = 1;
 	int nextseparator = 0;
-
+	printf("to parse %s\n",pAdd);
 	for(i=0;i<strlen(format);i++){
 		if(pAdd[0]==0)
 			break;
@@ -101,9 +101,11 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 		}
 	}
 	if(max < min){
-		mError = (char* )malloc(ind*sizeof(char));
-		strncpy(mError,pAdd-ind,ind-1);
-		mError[ind-1] = '\x00';
+		char maxmin[]="The maximum cannot be lower than the minimum";
+		mError = (char* )malloc((ind+strlen(maxmin)+1)*sizeof(char));
+		memset(mError,0,ind+strlen(maxmin));
+		strcat(mError,maxmin);
+		strncat(mError,pAdd-ind,ind-1);
 		return -13;
 	}
 	*m = min;
@@ -112,7 +114,7 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 }
 
 int freeSubfields(Subfield *sub){
-	//printf("subfree len %d offset %d\n",sub->len,sub->offset);
+	printf("subfree len %d offset %d\n",sub->len,sub->offset);
 	if(sub->value!=NULL){
 		free(sub->value);
 		sub->value = NULL;
@@ -124,11 +126,11 @@ int freeSubfields(Subfield *sub){
 	}
 	return 0;
 }
-/*Free all the malloc Champ.value before returning error*/
+/*Free all the malloc Fields.value before returning error*/
 
 void freeFields(Fields* fields, int indFields){
 	while (indFields>0){
-		//printf("\nFREE %d of length %d\n",indFields,fields[indFields-1].len);
+		printf("\nFREE %d of length %d\n",indFields,fields[indFields-1].len);
 		//printf("min %d max %d\n",fields[indFields-1].min,fields[indFields-1].max);
 		if(fields[indFields-1].value != NULL){
 				free(fields[indFields-1].value);
