@@ -67,7 +67,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 				if((fields[i].subfields)->groupindex!=index){
 					PyList_SET_ITEM(recordedFields, index, string);
 					string = PyString_FromString("");
-					index++;
+					index = (fields[i].subfields)->groupindex;
 				}				
 				retField(&string,&fields[i],fields[i].subfields);
 			}

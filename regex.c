@@ -229,7 +229,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		
 		nbsubtoken = parsegroup(tempgroup,groups);
 		if(nbsubtoken<=0){
-			freeFields(fields,ind+1);
+			freeFieldsCompletly(fields,ind+1);
 			return -1;
 		}
 		
@@ -240,7 +240,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 	    	if(fields[ind].set==0){
 		    	retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);
 			    if(retvalue<0){
-		    		freeFields(fields,ind+1);
+		    		freeFieldsCompletly(fields,ind+1);
 		    		return retvalue;
 		    	}
 		    	size+=strlen(token);
@@ -254,7 +254,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
     				if(ind==0){
     					posmatch = strstr(tomatch,fields[ind].value);
     					if(posmatch!=tomatch){
-    						freeFields(fields,ind+1);
+    						freeFieldsCompletly(fields,ind+1);
     						return -2;
     					}
     					else{
@@ -265,13 +265,13 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
     				else{	
 						posmatch = strstr(tomatch+fields[ind-1].min,fields[ind].value);
     					if(posmatch == NULL){
-						   	freeFields(fields,ind+1);
+						   	freeFieldsCompletly(fields,ind+1);
 							return -2;
 						}
 						else if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
 							rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
 							if(rollret!=0){
-								freeFields(fields,ind+1);
+								freeFieldsCompletly(fields,ind+1);
 								return -2;
 							}
 							//fields[ind-1].len = (int)(fields[ind].add-fields[ind-1].add);
@@ -287,12 +287,12 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		    	size = 0;
 		    	ind++;
 		    	if(ind>=MaxFields-1){
-		    		freeFields(fields,ind);
+		    		freeFieldsCompletly(fields,ind);
 		    		return -3;
 	    		}
 		    	retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,*groupindex);
 	    		if(retvalue<0){
-		    		freeFields(fields,ind+1);
+		    		freeFieldsCompletly(fields,ind+1);
 		    		return retvalue;
 		    	}
 		    	size+=strlen(token);
@@ -302,7 +302,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 	    	else{
 		    	retvalue = addSubfield(&fields[ind],token,maxlimit,*groupindex);
 		    	if(retvalue<0){
-				freeFields(fields,ind+1);
+				freeFieldsCompletly(fields,ind+1);
 		        		return retvalue;
 		    	}
 		    	size+=strlen(token);
@@ -319,7 +319,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		if(ind==0){
 			posmatch = strstr(tomatch,fields[ind].value);
 			if(posmatch!=tomatch){
-				freeFields(fields,ind+1);
+				freeFieldsCompletly(fields,ind+1);
 				return -2;
 			}
 			else{
@@ -330,12 +330,12 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		else{	
 				posmatch = strstr(tomatch+fields[ind-1].min,fields[ind].value);
 				if(posmatch == NULL){
-					freeFields(fields,ind+1);
+					freeFieldsCompletly(fields,ind+1);
 					return -2;
 				}
                     
                 if(strcmp(tomatch+(strlen(tomatch)-strlen(fields[ind].value)), fields[ind].value) != 0){
-                    freeFields(fields,ind+1);
+                    freeFieldsCompletly(fields,ind+1);
 					return -2;
                 }
                 else{
@@ -347,7 +347,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
                     printf("in\n");
 					rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
 					if(rollret!=0){
-						freeFields(fields,ind+1);
+						freeFieldsCompletly(fields,ind+1);
 						return -2;
 					}
 					//fields[ind-1].len = (int)(fields[ind].add-fields[ind-1].add);
@@ -366,12 +366,12 @@ int match(char* regex,char* tomatch,Fields* fields,int* groupindex){
 		if(strlen(tomatch)>fields[ind].max){
             rollret = rollBack(strlen(tomatch)-fields[ind].max, ind,fields,tomatchcopy, 1,1);
             if(rollret!=0){
-               freeFields(fields,ind+1);
+               freeFieldsCompletly(fields,ind+1);
 				return -2; 
             }
         }
 		else if (strlen(tomatch)<fields[ind].min){
-            freeFields(fields,ind+1);
+            freeFieldsCompletly(fields,ind+1);
 			return -2;
 		}
 

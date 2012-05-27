@@ -56,11 +56,14 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 				len++;
 			}
 			if(len == MaxLen){
-				char etc[]="...";
-				mError = (char* )malloc((strlen(etc)+len+1)*sizeof(char));
-				strncpy(mError,pAdd,len);
-				strncpy(mError+len,etc,strlen(etc));
-				mError[strlen(etc)+len]='\x00';
+				char message[]="The size of variable field cannot be higher than 5 digits : ";
+				char etc[] = "... in ";
+				mError = (char* )malloc((strlen(message)+strlen(pAdd-ind)+strlen(etc)+len+1)*sizeof(char));
+				memset(mError,0,(strlen(message)+strlen(pAdd-ind)+strlen(etc)+len+1));
+				strcat(mError,message);				
+				strncat(mError,pAdd,len);
+				strcat(mError,etc);
+				strcat(mError,pAdd-ind);				
 				return -12;
 			}			
 			if(len>0){
@@ -149,7 +152,20 @@ void freeFields(Fields* fields, int indFields){
 		indFields--;	
 	}
 }
-
+/* Free fields and subfields before returning an error code*/
+void freeFieldsCompletly(Fields* fields, int indFields){
+	freeFields(fields,indFields);
+	Subfield* sub;
+	while (indFields>0){
+		sub = fields[indFields-1].subfields;
+		while(sub!=NULL){
+			fields[indFields-1].subfields = (fields[indFields-1].subfields)->next;
+			dealloc((void **)&sub);
+			sub = fields[indFields-1].subfields;
+		}
+		indFields--;	
+	}
+}
 
 
 

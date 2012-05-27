@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import _libRegex
-reg = ["(aok.{4,5}r","(aok.{45sd}","","(aok.{6,5})","idy","..zef.","."]
+reg = ["(aok.{4,5}r","(aok.{45sd}","(aok.{452937497237493}","","(aok.{6,5})","idy","..zef.","."]
 PERSO = "aok."
 #print PERSO
 print "--------------------"

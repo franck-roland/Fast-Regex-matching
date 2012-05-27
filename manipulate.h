@@ -5,6 +5,7 @@
 void dealloc(void**);
 int freeSubfields(Subfield *sub);
 void freeFields(Fields* fields, int indFields);
+void freeFieldsCompletly(Fields* fields, int indFields);
 
 int newField(Fields* field,int isStatic, char* add, char* token,int maxlimit,int groupindex);
 Subfield* newSubfield( unsigned int offset, char* v,int isStatic, int* min, int* max,int maxlimit,int groupindex);
