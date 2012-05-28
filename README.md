@@ -40,11 +40,8 @@ Usage
 	        print "regex: "+r
 	        try:
 	            l = _libRegex.match(r, PERSO, option)
-	            if len(r) < 100:
-	                print r
 	            print "SUCCESS"
 	            print l
-	            print len(l)
 	        except Exception, e:
 	            print ": ".join(e)
 
