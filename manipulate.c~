@@ -56,11 +56,14 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 				len++;
 			}
 			if(len == MaxLen){
-				char etc[]="...";
-				mError = (char* )malloc((strlen(etc)+len+1)*sizeof(char));
-				strncpy(mError,pAdd,len);
-				strncpy(mError+len,etc,strlen(etc));
-				mError[strlen(etc)+len]='\x00';
+				char message[]="The size of variable field cannot be higher than 5 digits : ";
+				char etc[] = "... in ";
+				mError = (char* )malloc((strlen(message)+strlen(pAdd-ind)+strlen(etc)+len+1)*sizeof(char));
+				memset(mError,0,(strlen(message)+strlen(pAdd-ind)+strlen(etc)+len+1));
+				strcat(mError,message);				
+				strncat(mError,pAdd,len);
+				strcat(mError,etc);
+				strcat(mError,pAdd-ind);				
 				return -12;
 			}			
 			if(len>0){
@@ -99,7 +102,7 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 			else{
 				char mismatch[]=" expected but found ";
 				char in[]=" in ";
-				char rem[]=".\nUsage Reminder for variable field: . alone or .{min,max} or .{size} where min<max and min and max are two numbers of 5digits maximum.\nDo not forget the space after the max";
+				char rem[]=".\nUsage Reminder for variable field: . alone or .{min,max} or .{size} where min<max and min and max are two numbers of 5digits maximum and size is a fixed size for the variable field.";
 				mError = (char* )malloc((strlen(pAdd-ind)+strlen(in)+strlen(mismatch)+3+strlen(rem))*sizeof(char));
 				memset(mError,0,(strlen(pAdd-ind)+strlen(in)+strlen(mismatch)+3+strlen(rem)));
 				mError[0] = format[i];
@@ -149,14 +152,27 @@ void freeFields(Fields* fields, int indFields){
 		indFields--;	
 	}
 }
+/* Free fields and subfields before returning an error code*/
+void freeFieldsCompletly(Fields* fields, int indFields){
+	freeFields(fields,indFields);
+	Subfield* sub;
+	while (indFields>0){
+		sub = fields[indFields-1].subfields;
+		while(sub!=NULL){
+			fields[indFields-1].subfields = (fields[indFields-1].subfields)->next;
+			dealloc((void **)&sub);
+			sub = fields[indFields-1].subfields;
+		}
+		indFields--;	
+	}
+}
 
 
 
 
 
 
-
-int newField(Fields* field,int isStatic, char* add, char* token,int maxlimit,int groupindex){
+int newField(Fields* field,int isStatic, char* add, char* token,int maxlimit,int groupindex, int isagroup){
 	field->set = 1;
 	field->isStatic = isStatic;
 	field->add = add;
@@ -164,6 +180,8 @@ int newField(Fields* field,int isStatic, char* add, char* token,int maxlimit,int
 	field->min = 0;
 	field->max = 0;
 	field->len = 0;
+	field->isagroup = isagroup;
+
 	if(isStatic){
 		field->len = strlen(token);
 		field->subfields = newSubfield(0, token, isStatic,NULL,NULL,maxlimit,groupindex);

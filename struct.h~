@@ -8,7 +8,7 @@
 #define MaxLen 5
 #define MaxFields 5000
 
-extern char* mError = NULL;
+extern char* mError;
 
 typedef struct Subfield Subfield;
 struct Subfield{
@@ -24,6 +24,7 @@ struct Subfield{
 typedef struct Fields Fields;
 struct Fields{
 	int set;
+	int isagroup;
 	Subfield* subfields;
 	Subfield* lastfields;
 	int subfieldsSize;

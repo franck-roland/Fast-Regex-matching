@@ -6,7 +6,7 @@
 
 
 
-int match(char* s,char* tomatch,Fields* fields,int*);
+int match(char* s,char* tomatch,Fields* fields,int*,int);
 
 
 #endif

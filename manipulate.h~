@@ -2,11 +2,12 @@
 #define MANIPULATE_H
 #include "struct.h"
 
-void dealloc(void*);
+void dealloc(void**);
 int freeSubfields(Subfield *sub);
 void freeFields(Fields* fields, int indFields);
+void freeFieldsCompletly(Fields* fields, int indFields);
 
-int newField(Fields* field,int isStatic, char* add, char* token,int maxlimit,int groupindex);
+int newField(Fields* field,int isStatic, char* add, char* token,int maxlimit,int groupindex,int isagroup);
 Subfield* newSubfield( unsigned int offset, char* v,int isStatic, int* min, int* max,int maxlimit,int groupindex);
 int addSubfield(Fields* field, char* token,int maxlimit,int groupindex);
 

@@ -24,6 +24,6 @@ PyObject* py_match(PyObject* self, PyObject* args);
 *   field: the current field we are analyzing
 *   sub: the subfield we add the String representation to the variable field
 */
-void retField(PyObject** string,Fields* field,Subfield* sub);
+void retField(PyObject** string,Fields* field,Subfield* sub,int options);
 
 #endif
