@@ -13,8 +13,11 @@ Usage
 ### Syntax of regex:	
 *	. equivalent to .* in common regex language
 *	.{min,max} for a variable field which size is between min and max. min <=max
-*	.{c} for a variable field of size c
+*	.{c} for a variable field of size c  
+	if you want only 1 char that can be variable, write .{1}
 *	(smthg) for grouping expression
+
+
 
 ### Use in a python script:
 *	Import the python module _libRegex
