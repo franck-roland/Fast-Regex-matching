@@ -9,9 +9,19 @@ This implementation is doing alignment on the fly instead of compiling a complet
 
 Usage
 ===================
-Syntax:	
+
+Syntax of regex:	
 *	. equivalent to .* in common regex language
 *	.{min,max} for a variable field which size is between min and max. min <=max
 *	.{c} for a variable field of size c
 *	(smthg) for grouping expression
 
+Use in a python script:
+*	Import the python module _libRegex
+*	_libRegex.match(REGEX,MESSAGE,OPTION)
+*  	OPTION can be 0 or 1
+	*	If equal to 0: get all group in when align the message
+	*	If equal to 1: get only the group in parenthesis and variable fields when aligning
+*	Put _libRegex.match(REGEX,MESSAGE,OPTION) in a (try,except) structure. 
+	_libRegex.match raise an exception when cannot align message or when the regex contain syntax error
+ 
