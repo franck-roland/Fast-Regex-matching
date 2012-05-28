@@ -10,8 +10,8 @@ This implementation is doing alignment on the fly instead of compiling a complet
 Usage
 ===================
 Syntax:	
-	. equivalent to .* in common regex language
-	.{min,max} for a variable field which size is between min and max. min <=max
-	.{c} for a variable field of size c
-	(smthg) for grouping expression
+*	. equivalent to .* in common regex language
+*	.{min,max} for a variable field which size is between min and max. min <=max
+*	.{c} for a variable field of size c
+*	(smthg) for grouping expression
 
