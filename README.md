@@ -27,6 +27,7 @@ Usage
 
 ### Example:
 **test.py**
+
 	import _libRegex
 	reg = ["(aok.{4,5}r","(aok.{45sd}","(aok.{452937497237493}","","(aok.{6,5})","idy","..zef.",".","(a.{0,5})o."]
 	PERSO = "aok."
