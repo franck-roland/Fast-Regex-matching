@@ -8,7 +8,7 @@ void dealloc(void **s)
 	}
 
 }
-char* mError = NULL;
+
 /*
 	parseVariableFields
 	return value:

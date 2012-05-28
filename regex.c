@@ -1,6 +1,6 @@
 #include "regex.h"
 
-
+char* mError = NULL;
 
 /*
 *    parsegroup
@@ -228,34 +228,52 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
     int last = 0;
     int toincrement = 0;
     int groupindex = 0;
-
+	int decalgroup_index = 0;
+	
     if(strlen(regex)<=0)
         return -4;
     if(strlen(tomatch)<=0)
         return -5;
     while(1){
-        /*tempgroup = strtok(str1,border);
-        if (tempgroup==NULL)
-            break;
-        */
         if(last || strlen(regex)==0)
             break;
         begin = strchr(regex,opengroup);
         end = strchr(regex,closegroup);
 
-        if((begin == NULL && end!=NULL) || (begin !=NULL && end == NULL) || (end<begin)){
+        if((begin == NULL && end!=NULL) || (begin !=NULL && end == NULL) || (end<begin) || (end == begin+1) || (begin!=NULL && end !=NULL && strchr(begin+1,opengroup)!=NULL && strchr(begin+1,opengroup)<end) ){
+			mError = (char* )malloc((strlen(regex)+1)*sizeof(char));
+			memset(mError,0,(strlen(regex)+1));
+							
             freeFieldsCompletly(fields,ind+1);
-            return -1;
+            if(end == NULL){
+            	strcat(mError,regex);
+            	return -6;
+            }
+            else if(begin == NULL){
+            	strcat(mError,regex);
+            	return -7;
+            }
+            else if(end == begin +1){
+            	strcat(mError,regex);
+            	return -8;
+            }
+            else if (begin!=NULL && end !=NULL && strchr(begin+1,opengroup)<end){
+            	strcat(mError,begin);
+            	return -9;
+            }
+            else
+            	return -1;
         }
         else if(begin == NULL && end == NULL){
-            //if(regex == regexAtbegin && options)
-                //printf(" ");
             toincrement = !options;
+            if((regex == regexAtbegin) && options){// No group
+            	decalgroup_index = 1;
+            }
             last = 1;
             tempgroup = regex;
             regex += strlen(regex);
-			if(groupindex>0)
-				groupindex=0;
+            if(groupindex>0)
+                groupindex=0;
             --groupindex;
         }
         else if(begin == regex){
@@ -264,8 +282,8 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
             memset(tempgroup,0,(end-begin));
             strncpy(tempgroup,begin+1,(end-begin-1));
             regex = end+1;
-			if(groupindex<0)
-				groupindex=0;
+            if(groupindex<0)
+                groupindex=0;
             ++groupindex;
         }
         else{
@@ -274,13 +292,11 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
             memset(tempgroup,0,(begin-regex+1));
             strncpy(tempgroup,regex,(begin-regex));
             regex = begin;
-			if(groupindex>0)
-				groupindex=0;
+            if(groupindex>0)
+                groupindex=0;
             --groupindex;
         }
-        //printf("substring %s\n",tempgroup);
         nbsubtoken = parsegroup(tempgroup,groups);
-        //printf("substring2 %d\n",nbsubtoken);        
         if(!last){
             free(tempgroup);
             tempgroup = NULL;
@@ -294,19 +310,19 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         
         for(i=0;i<nbsubtoken;i++){
             token=groups[i];
-        //printf("substring %s\n",token);
 
             //Very first field
             if(fields[ind].set==0){
+            	groupindex -= (decalgroup_index+(!options)*(groupindex<0?1:0));
                 retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,groupindex);
-            	if(retvalue<0){
+                if(retvalue<0){
                     freeFieldsCompletly(fields,ind+1);
                     return retvalue;
-            	}
-				if(!toincrement && !isStatic(token,'.'))
-					++*totalfield;
-            	size+=strlen(token);
-        	}
+                }
+                if(!toincrement && !isStatic(token,'.'))
+                    ++*totalfield;
+                size+=strlen(token);
+            }
 
         
             //New type of field
@@ -352,6 +368,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
                     freeFieldsCompletly(fields,ind);
                     return -3;
                 }
+            	groupindex -= (decalgroup_index+(!options)*(groupindex<0?1:0));
                 retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,groupindex);
                 if(retvalue<0){
                     freeFieldsCompletly(fields,ind+1);
@@ -362,6 +379,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
 
             //Same type of field => push the subfield in the chainlist 
             else{
+            	groupindex -= (decalgroup_index+(!options)*(groupindex<0?1:0));
                 retvalue = addSubfield(&fields[ind],token,maxlimit,groupindex);
                 if(retvalue<0){
                 freeFieldsCompletly(fields,ind+1);

@@ -72,11 +72,11 @@ PyObject* py_match(PyObject* self, PyObject* args) {
                 	groupindex=(fields[i].subfields)->groupindex;
             	while(fields[i].subfields!=NULL){
                 	if((fields[i].subfields)->groupindex!=groupindex){
-						if(!exactlymatch ||(exactlymatch && strcmp("",PyString_AsString(string))))
+						if(!exactlymatch || (exactlymatch && strcmp("",PyString_AsString(string))) )
                     		PyList_Append(recordedFields, string);
                    		string = PyString_FromString("");
                     	groupindex = (fields[i].subfields)->groupindex;
-                	}                
+                	}       
                 	retField(&string,&fields[i],fields[i].subfields, exactlymatch);
             	}
         	}
@@ -89,11 +89,15 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 
     switch (indFields){
         case -1 :
-        case -11 : strcpy(errormsg,"Format Error"); break;
+        case -11 : strcpy(errormsg,"Syntax Error: "); break;
         case -2 : strcpy(errormsg, "Cannot match the string with the regex"); break;
         case -3 : strcpy(errormsg, "Too much different fields"); break;
         case -4 : strcpy(errormsg, "The regex is empty"); break;
         case -5 : strcpy(errormsg, "The chain to match is empty"); break;
+        case -6	: strcpy(errormsg, "Missing closing parenthesis: "); break;
+        case -7	: strcpy(errormsg, "Missing opening parenthesis: "); break;
+        case -8 : strcpy(errormsg, "Empty group"); break;
+        case -9	: strcpy(errormsg, "( found in a group: "); break;
         case -12 : strcpy(errormsg, "One variable value is to large. 5 digit maximum"); break;
         case -13 : strcpy(errormsg, "One min greater than max"); break;
         default : strcpy(errormsg, "Error"); break;
