@@ -61,7 +61,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 	        int groupindex = 0;
         PyObject *string = PyString_FromString("");
         recordedFields = PyList_New(0);
-        printf("%d\n",totalfields);
+        //printf("%d\n",totalfields);
         /*if(!totalfields){
             freeFieldsCompletly(fields,indFields);
         }
@@ -71,9 +71,8 @@ PyObject* py_match(PyObject* self, PyObject* args) {
             	if(!i)
                 	groupindex=(fields[i].subfields)->groupindex;
             	while(fields[i].subfields!=NULL){
-                	printf("while\n");
                 	if((fields[i].subfields)->groupindex!=groupindex){
-						if(exactlymatch && strcmp("",PyString_AsString(string)))
+						if(!exactlymatch ||(exactlymatch && strcmp("",PyString_AsString(string))))
                     		PyList_Append(recordedFields, string);
                    		string = PyString_FromString("");
                     	groupindex = (fields[i].subfields)->groupindex;
@@ -81,7 +80,6 @@ PyObject* py_match(PyObject* self, PyObject* args) {
                 	retField(&string,&fields[i],fields[i].subfields, exactlymatch);
             	}
         	}
-        	printf("endloop\n");
         	PyList_Append(recordedFields, string);
         //}
         return recordedFields;
@@ -112,9 +110,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 
 void retField(PyObject **string,Fields* field,Subfield* sub,int options){
     field->subfields = sub->next;
-	printf("isstatic %d ",field->isStatic);
 	if((!options) || (options && (sub->groupindex>0 || !field->isStatic))){
-		printf("inside\n");
     	PyObject *toRet = Py_BuildValue("s#", field->add+sub->offset, sub->len);
     	PyString_ConcatAndDel(string,toRet);
 	}

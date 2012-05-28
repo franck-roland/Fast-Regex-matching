@@ -248,8 +248,8 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
             return -1;
         }
         else if(begin == NULL && end == NULL){
-            if(regex == regexAtbegin && options)
-                printf(" ");
+            //if(regex == regexAtbegin && options)
+                //printf(" ");
             toincrement = !options;
             last = 1;
             tempgroup = regex;
@@ -278,9 +278,9 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
 				groupindex=0;
             --groupindex;
         }
-        printf("substring %s\n",tempgroup);
+        //printf("substring %s\n",tempgroup);
         nbsubtoken = parsegroup(tempgroup,groups);
-        printf("substring2 %d\n",nbsubtoken);        
+        //printf("substring2 %d\n",nbsubtoken);        
         if(!last){
             free(tempgroup);
             tempgroup = NULL;
@@ -406,9 +406,9 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
                     posmatch = tomatch+(strlen(tomatch)-strlen(fields[ind].value));
                     setAdd(&fields[ind],posmatch);
                 }
-                printf("%s\n",tomatch+(strlen(tomatch)-strlen(fields[ind].value)));
+                //printf("%s\n",tomatch+(strlen(tomatch)-strlen(fields[ind].value)));
                 if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
-                    printf("in\n");
+                    //printf("in\n");
                     rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
                     if(rollret!=0){
                         freeFieldsCompletly(fields,ind+1);
