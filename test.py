@@ -22,6 +22,7 @@ def test(option):
         try:
             l = _libRegex.match(r, PERSO, option)
             print "SUCCESS"
+            print l
             print l.split('\n')
             print
             print "#fields "+str(len(l.split('\n')))
