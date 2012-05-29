@@ -1,6 +1,6 @@
 #include "manipulate.h"
 
-void dealloc(void **s)
+void dealloc(void** s)
 {
 	if(*s!=NULL){
 		free(*s);
@@ -142,9 +142,10 @@ int freeSubfields(Subfield *sub){
 
 void freeFields(Fields* fields, int indFields){
 	while (indFields>0){
-		//printf("\nFREE %d of length %d\n",indFields,fields[indFields-1].len);
+		//printf("%s\n",fields[indFields-1].value);
 		//printf("min %d max %d\n",fields[indFields-1].min,fields[indFields-1].max);
-		dealloc((void **)&fields[indFields-1].value);
+		//if(fields[indFields-1].value!=NULL)
+			dealloc((void **)&fields[indFields-1].value);
 				//if((&fields[indFields-1])->subfields==NULL)
 					//printf("soucis\n");
 		if(fields[indFields-1].subfields != NULL)
@@ -260,7 +261,8 @@ Subfield* newSubfield( unsigned int offset, char* v,int isStatic, int* min, int*
 			subfield->min = 0;
 			subfield->max = maxlimit;			
 			retparse = parseVariableFields(v,&(subfield->min),&(subfield->max));
-			dealloc((void **)&v);
+			subfield->value = v;
+			//free(v);
 			if(retparse<0){
 				dealloc((void **)&subfield);
 				return NULL;

@@ -9,9 +9,8 @@ char* mError = NULL;
 
 char* createtoken(unsigned int size, char* from){
     char* nt;
-    nt = (char *) malloc (size*sizeof(char));
-    memset(nt,0,size);
-    strncpy(nt,from,size-1);
+    nt = (char *) calloc (size,sizeof(char));
+    strncat(nt,from,size-1);
     return nt;
 
 }
@@ -52,13 +51,13 @@ int parsegroup(char* token,char ** groups)
             }
             //There exist other variable fields
             else{
-                    if(nextbrack==NULL || (nextbrack >= nextdot)){
+                    if(nextbrack==NULL || (nextbrack >= nextdot)){//.__.{} case
                         ntsize = 2;
                         groups[nbdifferentfield] = createtoken(ntsize,token);
                         nbdifferentfield++;
                         token = dot+1;
                     }                
-                    else{
+                    else{//.{,}__. case
                         ntsize = (unsigned int)(nextbrack-dot+2);
                         groups[nbdifferentfield] = createtoken(ntsize,token);
                         nbdifferentfield++;
