@@ -1,48 +1,9 @@
 #include "struct.h"
 #include "regex.h"
 #include "manipulate.h"
-#define couleur(param) printf("\033[%sm",param)
 
-void showans(char* message, char* answer){
-	char* next;
-	char* prev=message;
-	char* match;
-	int len = strlen(message)+1;
-	char* copy = (char*) malloc(len*sizeof(char));
-	char* token = (char*) malloc(len*sizeof(char));
-	
-	memset(copy,0,len);
-	while(1){
-		memset(token,0,len);
-		next = strchr(answer,'\n');
-		strncat(token,answer,(unsigned int)(next-answer));
-		match = strstr(message,token);
-		if(match==NULL)
-			break;	
-		if(next==NULL)
-			break;
-		couleur("0");
-		strncat(copy,message,(unsigned int)(match-message));
-		printf("%s",copy);
-		memset(copy,0,len);
-		couleur("31");
-		strncat(copy,match,strlen(token));
-		printf("%s",copy);
-		memset(copy,0,len);
-		message = match + strlen(token);
-		answer = next+1;
-	}
-	if(strlen(message)>0){
-		couleur("0");
-		printf("%s\n",message);
-	}
-	else{
-		printf("\n");
-	}
-	couleur("0");
-	free(copy);
-	free(token);
-}
+
+
 int main(){
 	char* errormsg;
 	char tomatch[] ="3c21444f43545950452068746d6c205055424c494320222d2f2f5733432f2f4454442048544d4c20332e322046696e616c2f2f454e223e3c68746d6c3e0a3c7469746c653e4469726563746f7279206c697374696e6720666f72202fdelim6e65delim656edelim2f2f3c2f7469746c653e0a3c626f64793e0a3c68323e4469726563746f7279206c697374696e6720666f72202fdelim6e65delim656edelim2fdelim3c2f68323e0a3c68723e0a3c756c3e0a3c6c693e3c6120687265663d22delim2edelim223edelim2edelim3c2f613e0a3c6c693e3c6120687265663d22delim2edelim223edelim2edelim3c2f613e0a3c6c693e3c6120687265663d22delim2f223edelim2f3c2f613e0a3c6c693e3c6120687265663d22delim223edelim3c2f613e0a3c6c693e3c6120687265663d22delim22\
@@ -61,8 +22,7 @@ d22delim223edelim3c2f613e0a3c6c693e3c6120687265663d22delim74delim223edelim74deli
 	    char* answer = (char*) malloc((strlen(tomatch)*2+1)*sizeof(char));
 	    memset(answer,0,(strlen(tomatch)*2+1));
         computeAlignement(fields,exactlymatch,indFields,answer,tomatch,1);
-        
-        showans(tomatch, answer);
+        showans(tomatch, answer);// print the answer
         free(answer);
         return 0;
     }

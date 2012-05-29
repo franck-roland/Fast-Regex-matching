@@ -521,28 +521,44 @@ void retField(char *string,Fields* field,Subfield* sub,int options){
     dealloc((void **)&sub);
 
 }
-/*
-int main(int argc, char** argv){
-    int indFields;
-    char* tomatch;
-    char* regex;
-    Fields fields[1024];
-    if (argc ==3){
-        tomatch = argv[2];
-        regex = argv[1];
-        indFields = match(regex,tomatch,fields);
-        if(indFields>=0){
-            //printf("GOOD\n");
-            while (indFields>=0){
-                ////printf("%ld\n",(fields[indFields].len)/2);
-                ////printf("%s\n",fields[indFields].add);
-                indFields--;
-            }
-            ////printf("%s\n",tomatch);
-        }
-        else
-            //printf("Echec\n");
 
-    }
-    return 0;
-}*/
+void showans(char* message, char* answer){
+	char* next;
+	char* match;
+	int len = strlen(message)+1;
+	char* copy = (char*) malloc(len*sizeof(char));
+	char* token = (char*) malloc(len*sizeof(char));
+	
+	memset(copy,0,len);
+	while(1){
+		memset(token,0,len);
+		next = strchr(answer,'\n');
+		strncat(token,answer,(unsigned int)(next-answer));
+		match = strstr(message,token);
+		if(match==NULL)
+			break;	
+		if(next==NULL)
+			break;
+		couleur("0");
+		strncat(copy,message,(unsigned int)(match-message));
+		printf("%s",copy);
+		memset(copy,0,len);
+		couleur("31");
+		strncat(copy,match,strlen(token));
+		printf("%s",copy);
+		memset(copy,0,len);
+		message = match + strlen(token);
+		answer = next+1;
+	}
+	if(strlen(message)>0){
+		couleur("0");
+		printf("%s\n",message);
+	}
+	else{
+		printf("\n");
+	}
+	couleur("0");
+	free(copy);
+	free(token);
+}
+
