@@ -12,7 +12,9 @@ Usage
 
 ### Syntax of regex:	
 *	. equivalent to .* in common regex language
-*	.{min,max} for a variable field which size is between min and max. min <=max
+*	.{min,max} for a variable field which size is between min and max. min <=max  
+	You can also write.{,max} (min will be equal to 0)  
+	or .{min,} for variable field with size at most equal to max
 *	.{c} for a variable field of size c.  
 	if you want only 1 char that can be variable, write .{1}
 *	(smthg) for grouping expression
