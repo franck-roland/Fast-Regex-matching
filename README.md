@@ -14,7 +14,7 @@ Usage
 *	__.__ equivalent to __.*__ in common regex language
 *	__.{min,max}__ for a variable field which size is between min and max. min <=max  
 	You can also write **.{,max}** (min will be equal to 0)  
-	or **.{min,}** for variable field with size at most equal to max
+	or **.{min,}** for variable field with size at least equal to min
 *	__.{c}__ for a variable field of size c.  
 	if you want only 1 char that can be variable, write __.{1}__
 *	__(exp)__ for grouping expression
