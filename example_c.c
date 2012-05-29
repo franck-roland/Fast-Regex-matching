@@ -24,7 +24,7 @@ d22delim223edelim3c2f613e0a3c6c693e3c6120687265663d22delim74delim223edelim74deli
 	    char* answer = (char*) malloc((strlen(tomatch)*2+1)*sizeof(char));
 	    memset(answer,0,(strlen(tomatch)*2+1));
         computeAlignement(fields,exactlymatch,indFields,answer,tomatch,1);
-        //showans(tomatch, answer);// print the answer
+        showans(tomatch, answer);// print the answer
         free(answer);
         return 0;
     }
