@@ -31,8 +31,8 @@ Usage
 	_libRegex.match raise an exception when cannot align message or when the regex contain syntax error
 
 ### Example:
-**test.py**
-Usage: ./test.py option
+**test.py**  
+Usage: ./test.py option  
 option = 0 or 1
 
 
