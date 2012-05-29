@@ -19,5 +19,6 @@ int parseVariableFields(char *pAdd, int* m, int* M);
 void adjustfield(Fields* field);
 int isStatic(char *regex,int var);
 
+void doerrormessage(char *errormsg,int errorcode);
 
 #endif

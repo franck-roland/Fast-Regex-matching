@@ -234,6 +234,13 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         return -4;
     if(strlen(tomatch)<=0)
         return -5;
+        
+   	for(i = 0; i<MaxFields;i++){
+        fields[i].set = 0;
+        fields[i].subfields = NULL;
+        fields[i].lastfields = NULL;
+    }
+    
     while(1){
         if(last || strlen(regex)==0)
             break;
@@ -266,7 +273,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         }
         else if(begin == NULL && end == NULL){
             toincrement = !options;
-            if((regex == regexAtbegin) && options){// No group
+            if(options){// No group
             	decalgroup_index = 1;
             }
             last = 1;
@@ -278,6 +285,9 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         }
         else if(begin == regex){
             toincrement = 1;
+            if(options){// No group
+            	decalgroup_index = 0;
+            }
             tempgroup = (char *) malloc((end-begin)*sizeof(char));
             memset(tempgroup,0,(end-begin));
             strncpy(tempgroup,begin+1,(end-begin-1));
@@ -288,6 +298,9 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         }
         else{
             toincrement = !options;
+            if(options){// No group
+            	decalgroup_index = 1;
+            }
             tempgroup = (char *) malloc((begin-regex+1)*sizeof(char));
             memset(tempgroup,0,(begin-regex+1));
             strncpy(tempgroup,regex,(begin-regex));
@@ -462,6 +475,52 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
     return ind;
 }
 
+char* computeAlignement(Fields* fields,int options,int indFields,char* answer,char* message,int cimplement){
+	if(indFields>=0)
+    {
+    	unsigned int len = (strlen(message)*2+1);
+		char* tempans = (char*) malloc(len*sizeof(char));
+		memset(tempans,0,len);
+	    int groupindex = 0;
+	    int i;
+	    
+        for (i=0;i<=indFields;i++){
+           	adjustfield(&fields[i]);
+            if(!i)
+                groupindex=(fields[i].subfields)->groupindex;
+            while(fields[i].subfields!=NULL){
+            	
+            	//printf("group %d tempans %s\n\n",(fields[i].subfields)->groupindex,tempans);
+               	if((fields[i].subfields)->groupindex!=groupindex){
+					if(!options || (options && strlen(tempans)) ){
+						strcat(answer,tempans);
+               			strcat(answer,"\n");
+               		}
+               		memset(tempans,0,len);
+                   	groupindex = (fields[i].subfields)->groupindex;
+               	}       
+               	retField(tempans,&fields[i],fields[i].subfields, options);
+            }
+        }
+        if(!options || (options && strlen(tempans)) ){
+			strcat(answer,tempans);
+			if(cimplement)
+				strcat(answer,"\n");
+        }
+        free(tempans);
+        return answer;
+    }
+    return NULL;
+
+}
+void retField(char *string,Fields* field,Subfield* sub,int options){
+    field->subfields = sub->next;
+	if((!options) || (options && (sub->groupindex>0))){//|| !field->isStatic))){
+    	strncat(string,field->add+sub->offset,sub->len);
+	}
+    dealloc((void **)&sub);
+
+}
 /*
 int main(int argc, char** argv){
     int indFields;

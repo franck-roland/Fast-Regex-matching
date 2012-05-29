@@ -24,101 +24,39 @@ PyMODINIT_FUNC init_libRegex(void) {
 
 
 PyObject* py_match(PyObject* self, PyObject* args) {
-    char errormsg[512];
+    char* errormsg;
     char* tomatch;
     char* regex;
     int indFields;
-    int i;
     int totalfields=0;
     int exactlymatch = 0;
     Fields fields[MaxFields];
-
-    for(i = 0; i<MaxFields;i++){
-        fields[i].set = 0;
-        fields[i].subfields = NULL;
-        fields[i].lastfields = NULL;
-    }
     PyObject *recordedFields = NULL;
+
     // Converts the arguments
-      if (!PyArg_ParseTuple(args, "ssi", &regex, &tomatch, &exactlymatch)) {
-            PyErr_SetString(PyExc_TypeError, "Error while parsing the arguments provided to py_getHighestEquivalentGroup");
-            return NULL;
-      }
-    /*if(strcmp(regex,tomatch)==0){
-        recordedFields = PyList_New(1);
-        PyObject *field = Py_BuildValue("s", regex);
-        if (!field) {
-            Py_XDECREF(recordedFields);        
-               return NULL;
-               }
-        PyList_SET_ITEM(recordedFields, 0, field);
-        return recordedFields;
-    }*/
+    if (!PyArg_ParseTuple(args, "ssi", &regex, &tomatch, &exactlymatch)) {
+    	PyErr_SetString(PyExc_TypeError, "Error while parsing the arguments provided to py_getHighestEquivalentGroup");
+        return NULL;
+    }
+
     indFields = match(regex,tomatch,fields,&totalfields,exactlymatch);
     
     if(indFields>=0)
     {
-	        int groupindex = 0;
-        PyObject *string = PyString_FromString("");
-        recordedFields = PyList_New(0);
-        //printf("%d\n",totalfields);
-        /*if(!totalfields){
-            freeFieldsCompletly(fields,indFields);
-        }
-        else{*/
-        	for (i=0;i<=indFields;i++){
-           		adjustfield(&fields[i]);
-            	if(!i)
-                	groupindex=(fields[i].subfields)->groupindex;
-            	while(fields[i].subfields!=NULL){
-                	if((fields[i].subfields)->groupindex!=groupindex){
-						if(!exactlymatch || (exactlymatch && strcmp("",PyString_AsString(string))) )
-                    		PyList_Append(recordedFields, string);
-                   		string = PyString_FromString("");
-                    	groupindex = (fields[i].subfields)->groupindex;
-                	}       
-                	retField(&string,&fields[i],fields[i].subfields, exactlymatch);
-            	}
-        	}
-        	PyList_Append(recordedFields, string);
-        //}
+	    char* answer = (char*) malloc((strlen(tomatch)*2+1)*sizeof(char));
+	    memset(answer,0,(strlen(tomatch)*2+1));
+        computeAlignement(fields,exactlymatch,indFields,answer,tomatch,0);
+        recordedFields = PyString_FromString(answer);
+        free(answer);
         return recordedFields;
     }
-        
+    errormsg = (char*) malloc((strlen(regex)+512)*sizeof(char));      
+    memset(errormsg,0,(strlen(regex)+512));
     Py_XINCREF(exception);
 
-    switch (indFields){
-        case -1 :
-        case -11 : strcpy(errormsg,"Syntax Error: "); break;
-        case -2 : strcpy(errormsg, "Cannot match the string with the regex"); break;
-        case -3 : strcpy(errormsg, "Too much different fields"); break;
-        case -4 : strcpy(errormsg, "The regex is empty"); break;
-        case -5 : strcpy(errormsg, "The chain to match is empty"); break;
-        case -6	: strcpy(errormsg, "Missing closing parenthesis: "); break;
-        case -7	: strcpy(errormsg, "Missing opening parenthesis: "); break;
-        case -8 : strcpy(errormsg, "Empty group"); break;
-        case -9	: strcpy(errormsg, "( found in a group: "); break;
-        case -12 : strcpy(errormsg, "One variable value is to large. 5 digit maximum"); break;
-        case -13 : strcpy(errormsg, "One min greater than max"); break;
-        default : strcpy(errormsg, "Error"); break;
-    }
-    if(mError == NULL)
-        PyErr_SetObject(exception, Py_BuildValue("s#",errormsg,strlen(errormsg) ));
-    else{
-        PyErr_SetObject(exception, Py_BuildValue("s#s",errormsg,strlen(errormsg), mError));
-        dealloc((void **)&mError);
-    }
-    return     NULL;
-}
-
-
-void retField(PyObject **string,Fields* field,Subfield* sub,int options){
-    field->subfields = sub->next;
-	if((!options) || (options && (sub->groupindex>0 || !field->isStatic))){
-    	PyObject *toRet = Py_BuildValue("s#", field->add+sub->offset, sub->len);
-    	PyString_ConcatAndDel(string,toRet);
-	}
-    dealloc((void **)&sub);
-
+   	doerrormessage(errormsg,indFields);
+    PyErr_SetObject(exception, Py_BuildValue("s#",errormsg,strlen(errormsg) ));
+    dealloc((void **)&errormsg);
+    return NULL;
 }
 

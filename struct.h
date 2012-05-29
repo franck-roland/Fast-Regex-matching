@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-
 #define MaxLen 5
 #define MaxFields 5000
 
@@ -34,5 +33,4 @@ struct Fields{
 	int min;
 	int max;
 };
-
 #endif
