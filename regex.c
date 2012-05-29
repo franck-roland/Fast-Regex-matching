@@ -515,7 +515,7 @@ char* computeAlignement(Fields* fields,int options,int indFields,char* answer,ch
 }
 void retField(char *string,Fields* field,Subfield* sub,int options){
     field->subfields = sub->next;
-	if((!options) || (options && (sub->groupindex>0))){//|| !field->isStatic))){
+	if((!options) || (options && (sub->groupindex>0 || !field->isStatic))){
     	strncat(string,field->add+sub->offset,sub->len);
 	}
     dealloc((void **)&sub);
