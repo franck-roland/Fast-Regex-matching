@@ -32,6 +32,9 @@ Usage
 
 ### Example:
 **test.py**
+Usage: ./test.py option
+option = 0 or 1
+
 
 	#!/usr/bin/python
 	# -*- coding: latin-1 -*- 
