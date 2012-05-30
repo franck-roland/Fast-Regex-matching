@@ -208,7 +208,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
     unsigned int size=0;
     char* posmatch;
     int maxlimit = strlen(tomatch);
-    char* regexAtbegin = regex;
 
     int rollret = 0;
     char* tomatchcopy = tomatch;

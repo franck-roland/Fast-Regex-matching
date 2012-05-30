@@ -261,8 +261,8 @@ Subfield* newSubfield( unsigned int offset, char* v,int isStatic, int* min, int*
 			subfield->min = 0;
 			subfield->max = maxlimit;			
 			retparse = parseVariableFields(v,&(subfield->min),&(subfield->max));
-			subfield->value = v;
-			//free(v);
+			//subfield->value = v;
+			dealloc((void **)&v);
 			if(retparse<0){
 				dealloc((void **)&subfield);
 				return NULL;
