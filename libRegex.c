@@ -35,7 +35,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 
     // Converts the arguments
     if (!PyArg_ParseTuple(args, "ssi", &regex, &tomatch, &exactlymatch)) {
-    	PyErr_SetString(PyExc_TypeError, "Error while parsing the arguments provided to py_getHighestEquivalentGroup");
+    	PyErr_SetString(PyExc_TypeError, "Error while parsing the arguments provided to py_match");
         return NULL;
     }
 
