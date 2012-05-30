@@ -35,7 +35,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
 
     // Converts the arguments
     if (!PyArg_ParseTuple(args, "ssi", &regex, &tomatch, &exactlymatch)) {
-    	PyErr_SetString(PyExc_TypeError, "Error while parsing the arguments provided to py_match");
+    	PyErr_SetString(PyExc_TypeError, "Usage: _libRegex.match(regex,message,option) where option = 0 or 1");
         return NULL;
     }
 
