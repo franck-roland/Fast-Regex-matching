@@ -12,7 +12,7 @@ int matchandalign(char** answer,char* regex,char* tomatch,Fields* fields,int exa
 		errormsg = (char*) calloc((strlen(regex)+512),sizeof(char));      
    		doerrormessage(errormsg,indFields);
    		fprintf(stderr,"%s\n",errormsg);
-    	dealloc((void **)&errormsg);
+    		dealloc((void **)&errormsg);
 		return indFields;
 	}
 	else{
@@ -243,7 +243,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
     char* end;
     int last = 0;
     int groupindex = 0;
-	int decalgroup_index = 0;
+    int decalgroup_index = 0;
 	
     if(strlen(regex)<=0)
         return -4;
