@@ -32,7 +32,7 @@ Usage
 
 ### Example:
 **example_c.c**
-Compilation : gcc -o example example_c.c regex.c manipulate.c
+Compilation : gcc -o example example_c.c regex.c manipulate.c  
 **test.py**  
 Usage: ./test.py option  
 option = 0 or 1
