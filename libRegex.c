@@ -47,7 +47,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
     free(answer);
     char errormsg[]="Error append during alignment. See standard error output for more infos";      
     Py_XINCREF(exception);
-    PyErr_SetObject(exception, Py_BuildValue("s#",errormsg,strlen(errormsg) ));
+    PyErr_SetObject(exception, Py_BuildValue("s",errormsg));
     return NULL;
 }
 

@@ -11,7 +11,7 @@ int matchandalign(char** answer,char* regex,char* tomatch,Fields* fields,int exa
 		char* errormsg;
 		errormsg = (char*) calloc((strlen(regex)+512),sizeof(char));      
    		doerrormessage(errormsg,indFields);
-   		fprintf(stderr,"%s\n",errormsg);
+   		fprintf(stderr,"%s\n\n",errormsg);
     		dealloc((void **)&errormsg);
 		return indFields;
 	}
