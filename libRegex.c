@@ -24,37 +24,31 @@ PyMODINIT_FUNC init_libRegex(void) {
 
 
 PyObject* py_match(PyObject* self, PyObject* args) {
-    char* errormsg;
     char* tomatch;
     char* regex;
     int indFields;
     int exactlymatch = 0;
     Fields fields[MaxFields];
     PyObject *recordedFields = NULL;
-
+	char *answer = NULL;
     // Converts the arguments
     if (!PyArg_ParseTuple(args, "ssi", &regex, &tomatch, &exactlymatch)) {
     	PyErr_SetString(PyExc_TypeError, "Usage: _libRegex.match(regex,message,option) where option = 0 or 1");
         return NULL;
     }
 
-    indFields = match(regex,tomatch,fields,exactlymatch);
+    indFields = matchandalign(&answer,regex,tomatch,fields,exactlymatch,0);
     
     if(indFields>=0)
     {
-	    char* answer = (char*) calloc((strlen(tomatch)*2+1),sizeof(char));
-        computeAlignement(fields,exactlymatch,indFields,answer,tomatch,0);
         recordedFields = PyString_FromString(answer);
         free(answer);
         return recordedFields;
     }
-    errormsg = (char*) malloc((strlen(regex)+512)*sizeof(char));      
-    memset(errormsg,0,(strlen(regex)+512));
+    free(answer);
+    char errormsg[]="Error append during alignment. See standard error output for more infos";      
     Py_XINCREF(exception);
-
-   	doerrormessage(errormsg,indFields);
     PyErr_SetObject(exception, Py_BuildValue("s#",errormsg,strlen(errormsg) ));
-    dealloc((void **)&errormsg);
     return NULL;
 }
 

@@ -2,7 +2,28 @@
 
 char* mError = NULL;
 
+int matchandalign(char** answer,char* regex,char* tomatch,Fields* fields,int exactlymatch,int cimpl)
+{
+	int indFields;
+	*answer = (char*) calloc((strlen(tomatch)*2+1),sizeof(char));
+	indFields = match(regex,tomatch,fields,exactlymatch);
+	if(indFields<0){
+		char* errormsg;
+		errormsg = (char*) calloc((strlen(regex)+512),sizeof(char));      
+   		doerrormessage(errormsg,indFields);
+   		fprintf(stderr,"%s\n",errormsg);
+    	dealloc((void **)&errormsg);
+		return indFields;
+	}
+	else{
+        computeAlignement(fields,exactlymatch,indFields,*answer,tomatch,cimpl);
+        if (cimpl)
+        	showans(tomatch, *answer);// print the answer
+        return 0;
+	}
+	
 
+}
 char* createtoken(unsigned int size, char* from){
     char* nt;
     nt = (char *) calloc (size,sizeof(char));
@@ -329,6 +350,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                 retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,groupindex);
                 if(retvalue<0){
                     freeFieldsCompletly(fields,ind+1);
+                    freeTokens(groups,i+1,nbsubtoken);
                     return retvalue;
                 }
                 size+=strlen(token);
@@ -343,6 +365,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                         posmatch = strstr(tomatch,fields[ind].value);
                         if(posmatch!=tomatch){
                             freeFieldsCompletly(fields,ind+1);
+                            freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
                             return -2;
                         }
                         else{
@@ -353,13 +376,15 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                     else{    
                         posmatch = strstr(tomatch+fields[ind-1].min,fields[ind].value);
                         if(posmatch == NULL){
-                               freeFieldsCompletly(fields,ind+1);
+	                        freeFieldsCompletly(fields,ind+1);
+	                        freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
                             return -2;
                         }
                         else if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
                             rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
                             if(rollret!=0){
                                 freeFieldsCompletly(fields,ind+1);
+                                freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
                                 return -2;
                             }
                             //fields[ind-1].len = (int)(fields[ind].add-fields[ind-1].add);
@@ -371,17 +396,19 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                             tomatch = posmatch + fields[ind].len;
                         }
                     }
-                }
+                }// End if(fields[ind].isStatic)
                 size = 0;
                 ind++;
                 if(ind>=MaxFields-1){
                     freeFieldsCompletly(fields,ind);
+                    freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
                     return -3;
                 }
             	groupindex -= (decalgroup_index+(!options)*(groupindex<0?1:0));
                 retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,groupindex);
                 if(retvalue<0){
                     freeFieldsCompletly(fields,ind+1);
+                    freeTokens(groups,i+1,nbsubtoken);
                     return retvalue;
                 }
                 size+=strlen(token);
@@ -392,8 +419,9 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
             	groupindex -= (decalgroup_index+(!options)*(groupindex<0?1:0));
                 retvalue = addSubfield(&fields[ind],token,maxlimit,groupindex);
                 if(retvalue<0){
-                freeFieldsCompletly(fields,ind+1);
-                        return retvalue;
+                	freeFieldsCompletly(fields,ind+1);
+                	freeTokens(groups,i+1,nbsubtoken);
+                    return retvalue;
                 }
                 size+=strlen(token);
             }
