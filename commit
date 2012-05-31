@@ -1,4 +1,3 @@
 #!/bin/sh
-git add `ls`;
-# | grep -v -e "~\|commit"`;
-git rm `ls | grep -e "~"`
+git add `ls | grep -v -e "~\|commit"`;
+#git rm `ls | grep -e "~"`
