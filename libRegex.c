@@ -37,8 +37,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    indFields = matchandalign(&answer,regex,tomatch,fields,exactlymatch,0);
-    
+    indFields = matchandalign(&answer,regex,tomatch,fields,exactlymatch,0); 
     if(indFields>=0)
     {
         recordedFields = PyString_FromString(answer);

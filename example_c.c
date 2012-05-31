@@ -16,7 +16,7 @@ d22delim223edelim3c2f613e0a3c6c693e3c6120687265663d22delim74delim223edelim74deli
     char* answer=NULL;
     Fields fields[MaxFields];
 	indFields = matchandalign(&answer,regex,tomatch,fields,exactlymatch,1);
-	free(answer);//WARNING: DONT FORGET TO FREE ANSWER: it has been
+	free(answer);//WARNING: DONT FORGET TO FREE ANSWER: it has been allocated in matchand align
 	if(indFields <0)
     	return 1;
     
