@@ -28,7 +28,6 @@ PyObject* py_match(PyObject* self, PyObject* args) {
     char* tomatch;
     char* regex;
     int indFields;
-    int totalfields=0;
     int exactlymatch = 0;
     Fields fields[MaxFields];
     PyObject *recordedFields = NULL;
@@ -39,12 +38,11 @@ PyObject* py_match(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    indFields = match(regex,tomatch,fields,&totalfields,exactlymatch);
+    indFields = match(regex,tomatch,fields,exactlymatch);
     
     if(indFields>=0)
     {
-	    char* answer = (char*) malloc((strlen(tomatch)*2+1)*sizeof(char));
-	    memset(answer,0,(strlen(tomatch)*2+1));
+	    char* answer = (char*) calloc((strlen(tomatch)*2+1),sizeof(char));
         computeAlignement(fields,exactlymatch,indFields,answer,tomatch,0);
         recordedFields = PyString_FromString(answer);
         free(answer);

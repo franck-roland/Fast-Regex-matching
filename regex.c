@@ -197,7 +197,7 @@ int rollBack(unsigned int shift, int ind,Fields* fields, char* tomatch, int firs
 
 
 */
-int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
+int match(char* regex,char* tomatch,Fields* fields,int options){
     #define isgood(c) isalnum(c)||c==46
 
     //char delim='.';
@@ -221,7 +221,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
     char* begin;
     char* end;
     int last = 0;
-    int toincrement = 0;
     int groupindex = 0;
 	int decalgroup_index = 0;
 	
@@ -269,7 +268,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         }
         //There is no more group
         else if(begin == NULL && end == NULL){
-            toincrement = !options;
             //If option: we want only the variable field
             if(options){
             	decalgroup_index = 1;
@@ -283,7 +281,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         }
         //We enter a group
         else if(begin == regex){
-            toincrement = 1;
             //If option: reset decalgroup_index to 0 as we are in a group:
             //In a group: variable and constant field are put together
             if(options){
@@ -299,7 +296,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
         }
         //abcd(foo) case: we take the abcd part
         else{
-            toincrement = !options;
             //If option: we want only the variable field
             if(options){
             	decalgroup_index = 1;
@@ -335,8 +331,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
                     freeFieldsCompletly(fields,ind+1);
                     return retvalue;
                 }
-                if(!toincrement && !isStatic(token,'.'))
-                    ++*totalfield;
                 size+=strlen(token);
             }
 
@@ -405,8 +399,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
             }
 
         }//end for subtoken
-        if(toincrement)
-            ++*totalfield; //TODO remove totalfield (useless)
 
     }
     /*******************************************************/

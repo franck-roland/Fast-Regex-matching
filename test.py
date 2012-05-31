@@ -22,7 +22,6 @@ def test(option):
         try:
             l = _libRegex.match(r, PERSO, option)
             print "SUCCESS"
-            print l
             print l.split('\n')
             print
             print "#fields "+str(len(l.split('\n')))
@@ -32,4 +31,6 @@ def test(option):
 if(len(sys.argv) == 2):
 	if(int(sys.argv[1])==0 or int(sys.argv[1])==1):
 		test(int(sys.argv[1]))
-#test(1)
+else:
+	print "Usage: ./test.py [0 or 1]"
+	print
