@@ -76,12 +76,6 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 				else
 					max = atoi(buff);
 			}
-			else{
-				if(ismin)
-					min = *m;
-				else
-					max = *M;
-			}
 			pAdd+=len;
 			ind += len;
 		}
@@ -96,6 +90,15 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 				ind += 1;
 				pAdd++;
 				max = min;
+				if(!min){
+					char mismatch[]="empty variable field - .{} or .{0} - found: ";
+					char rem[]=".\nUsage Reminder for variable field: . alone or .{min,max} or .{size} where min<max and min and max are two numbers of 5digits maximum and size is a fixed size for the variable field.";
+					mError = (char* )calloc((strlen(pAdd-ind)+strlen(mismatch)+strlen(rem)+1),sizeof(char));
+					strcat(mError,mismatch);
+					strcat(mError,pAdd-ind);
+					strcat(mError,rem);
+					return -11;
+				}
 				break;
 			}
 			else{
