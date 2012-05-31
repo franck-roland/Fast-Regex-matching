@@ -2,10 +2,6 @@
 
 char* mError = NULL;
 
-/*
-*    parsegroup
-*    
-*/
 
 char* createtoken(unsigned int size, char* from){
     char* nt;
@@ -51,13 +47,15 @@ int parsegroup(char* token,char ** groups)
             }
             //There exist other variable fields
             else{
-                    if(nextbrack==NULL || (nextbrack >= nextdot)){//.__.{} case
+            	    //.__.{} case
+                    if(nextbrack==NULL || (nextbrack >= nextdot)){
                         ntsize = 2;
                         groups[nbdifferentfield] = createtoken(ntsize,token);
                         nbdifferentfield++;
                         token = dot+1;
-                    }                
-                    else{//.{,}__. case
+                    }
+                    //.{,}__. case
+                    else{
                         ntsize = (unsigned int)(nextbrack-dot+2);
                         groups[nbdifferentfield] = createtoken(ntsize,token);
                         nbdifferentfield++;
@@ -213,7 +211,6 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
     char* tomatchcopy = tomatch;
     int retvalue =0;
     char* tempgroup;
-    //char *str1;
     char* token;
     char* groups[MaxFields];
     int nbsubtoken = 0;
@@ -244,7 +241,8 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
             break;
         begin = strchr(regex,opengroup);
         end = strchr(regex,closegroup);
-
+        
+	//Error of syntax
         if((begin == NULL && end!=NULL) || (begin !=NULL && end == NULL) || (end<begin) || (end == begin+1) || (begin!=NULL && end !=NULL && strchr(begin+1,opengroup)!=NULL && strchr(begin+1,opengroup)<end) ){
 			mError = (char* )malloc((strlen(regex)+1)*sizeof(char));
 			memset(mError,0,(strlen(regex)+1));
@@ -269,9 +267,11 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
             else
             	return -1;
         }
+        //There is no more group
         else if(begin == NULL && end == NULL){
             toincrement = !options;
-            if(options){// No group
+            //If option: we want only the variable field
+            if(options){
             	decalgroup_index = 1;
             }
             last = 1;
@@ -281,9 +281,12 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
                 groupindex=0;
             --groupindex;
         }
+        //We enter a group
         else if(begin == regex){
             toincrement = 1;
-            if(options){// No group
+            //If option: reset decalgroup_index to 0 as we are in a group:
+            //In a group: variable and constant field are put together
+            if(options){
             	decalgroup_index = 0;
             }
             tempgroup = (char *) malloc((end-begin)*sizeof(char));
@@ -294,9 +297,11 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
                 groupindex=0;
             ++groupindex;
         }
+        //abcd(foo) case: we take the abcd part
         else{
             toincrement = !options;
-            if(options){// No group
+            //If option: we want only the variable field
+            if(options){
             	decalgroup_index = 1;
             }
             tempgroup = (char *) malloc((begin-regex+1)*sizeof(char));
@@ -401,7 +406,7 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
 
         }//end for subtoken
         if(toincrement)
-            ++*totalfield;
+            ++*totalfield; //TODO remove totalfield (useless)
 
     }
     /*******************************************************/
@@ -435,15 +440,12 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
                     posmatch = tomatch+(strlen(tomatch)-strlen(fields[ind].value));
                     setAdd(&fields[ind],posmatch);
                 }
-                //printf("%s\n",tomatch+(strlen(tomatch)-strlen(fields[ind].value)));
                 if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
-                    //printf("in\n");
                     rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
                     if(rollret!=0){
                         freeFieldsCompletly(fields,ind+1);
                         return -2;
                     }
-                    //fields[ind-1].len = (int)(fields[ind].add-fields[ind-1].add);
                     tomatch = fields[ind].add+fields[ind].len;
                 }
                 else{
@@ -474,40 +476,40 @@ int match(char* regex,char* tomatch,Fields* fields,int* totalfield,int options){
 }
 
 char* computeAlignement(Fields* fields,int options,int indFields,char* answer,char* message,int cimplement){
-	if(indFields>=0)
+    
+    if(indFields>=0)
     {
-    	unsigned int len = (strlen(message)*2+1);
-		char* tempans = (char*) malloc(len*sizeof(char));
-		memset(tempans,0,len);
-	    int groupindex = 0;
-	    int i;
+        unsigned int len = (strlen(message)*2+1);
+	char* tempans = (char*) malloc(len*sizeof(char));
+	memset(tempans,0,len);
+	int groupindex = 0;
+	int i;
 	    
         for (i=0;i<=indFields;i++){
-           	adjustfield(&fields[i]);
+            adjustfield(&fields[i]);
             if(!i)
                 groupindex=(fields[i].subfields)->groupindex;
             while(fields[i].subfields!=NULL){
-            	
-            	//printf("group %d tempans %s\n\n",(fields[i].subfields)->groupindex,tempans);
                	if((fields[i].subfields)->groupindex!=groupindex){
-					if(!options || (options && strlen(tempans)) ){
-						strcat(answer,tempans);
-               			strcat(answer,"\n");
-               		}
-               		memset(tempans,0,len);
-                   	groupindex = (fields[i].subfields)->groupindex;
+		    if(!options || (options && strlen(tempans)) ){
+		        strcat(answer,tempans);
+               		strcat(answer,"\n");
+               	    }
+               	    memset(tempans,0,len);
+                    groupindex = (fields[i].subfields)->groupindex;
                	}       
                	retField(tempans,&fields[i],fields[i].subfields, options);
             }
         }
         if(!options || (options && strlen(tempans)) ){
-			strcat(answer,tempans);
-			if(cimplement)
-				strcat(answer,"\n");
+	    strcat(answer,tempans);
+	    if(cimplement)
+	        strcat(answer,"\n");
         }
         free(tempans);
         return answer;
     }
+    //Error
     return NULL;
 
 }

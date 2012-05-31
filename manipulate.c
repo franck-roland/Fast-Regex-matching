@@ -44,7 +44,6 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 	char format2[]=".{0}";
 	int ismin = 1;
 	int nextseparator = 0;
-	//printf("to parse %s\n",pAdd);
 	
 	for(i=0;i<strlen(format);i++){
 		if(pAdd[0]==0)
@@ -129,12 +128,9 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 }
 
 int freeSubfields(Subfield *sub){
-	//printf("subfree len %d offset %d\n",sub->len,sub->offset);
 	dealloc((void **)&sub->value);
 	if(sub->next!=NULL){	
-		//if(freeSubfields(sub->next)==0)
 		freeSubfields(sub->next);
-			//free(sub->next);
 	}
 	return 0;
 }
@@ -142,12 +138,7 @@ int freeSubfields(Subfield *sub){
 
 void freeFields(Fields* fields, int indFields){
 	while (indFields>0){
-		//printf("%s\n",fields[indFields-1].value);
-		//printf("min %d max %d\n",fields[indFields-1].min,fields[indFields-1].max);
-		//if(fields[indFields-1].value!=NULL)
-			dealloc((void **)&fields[indFields-1].value);
-				//if((&fields[indFields-1])->subfields==NULL)
-					//printf("soucis\n");
+		dealloc((void **)&fields[indFields-1].value);
 		if(fields[indFields-1].subfields != NULL)
 			freeSubfields((&fields[indFields-1])->subfields);
 		indFields--;	
@@ -292,7 +283,6 @@ void setFieldvalue(Fields* field){
 		value[len]=0;	
 		field->len = len;
 		field->value = value;
-		//printf("valueng %s\n",field->value);
 	}
 
 }
