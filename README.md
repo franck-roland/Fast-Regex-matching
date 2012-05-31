@@ -31,6 +31,8 @@ Usage
 	_libRegex.match raise an exception when cannot align message or when the regex contain syntax error
 
 ### Example:
+**example_c.c**  
+Compilation : gcc -o example example_c.c regex.c manipulate.c  
 **test.py**  
 Usage: ./test.py option  
 option = 0 or 1
