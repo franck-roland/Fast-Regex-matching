@@ -40,8 +40,8 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 	int len = 0;
 	char buff[MaxLen];
 	int ind = 0;
-	char format[]=".{0,0}";
-	char format2[]=".{0}";
+	char format[]= ".{0,0}";
+	char format2[]=".{0}  ";
 	int ismin = 1;
 	int nextseparator = 0;
 	
@@ -80,7 +80,12 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 			ind += len;
 		}
 		else{
-			if(pAdd[0]==format[i]){
+			if(pAdd[0]==' '){
+				pAdd++;
+				ind += 1;
+				i-=2;
+			}
+			else if(pAdd[0]==format[i]){
 				if(nextseparator)
 					ismin = 0;
 				ind += 1;
