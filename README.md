@@ -29,6 +29,9 @@ Usage
 	*	If equal to 1: get only the group in parenthesis and variable fields when aligning
 *	Put _libRegex.match(REGEX,MESSAGE,OPTION) in a (try,except) structure. 
 	_libRegex.match raise an exception when cannot align message or when the regex contain syntax error
+	
+### Use in a python script:
+See example_c.c
 
 ### Example:
 **example_c.c**  
