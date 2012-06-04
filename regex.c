@@ -116,7 +116,9 @@ int parsegroup(char* token,char ** groups)
 int rollBack(unsigned int shift, int ind,Fields* fields, char* tomatch, int first, int lastvar)
 {
     char* nextmatching;
-    Fields* stat = (&fields[ind+1]);
+    Fields* stat = NULL;
+    if(lastvar == 0)
+    	stat=(&fields[ind+1]);
     Fields* var = (&fields[ind]);
     int retvalue = 0;
     if(first){
@@ -146,8 +148,9 @@ int rollBack(unsigned int shift, int ind,Fields* fields, char* tomatch, int firs
                         }
                     }
                     else{
-                        if(strlen(stat->add) >= var->min){
-                            var->len = (unsigned int)(strlen(stat->add));
+                    	var->add = fields[ind-1].add + fields[ind-1].len;
+                        if(strlen(var->add) >= var->min){
+                            var->len = (unsigned int)(strlen(var->add));
                             return 0;
                         }
                         else{
@@ -343,7 +346,6 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
         
         for(i=0;i<nbsubtoken;i++){
             token=groups[i];
-
             //Very first field
             if(fields[ind].set==0){
             	groupindex -= (decalgroup_index+(!options)*(groupindex<0?1:0));
@@ -482,7 +484,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                 rollret = rollBack(strlen(tomatch)-fields[ind].max, ind,fields,tomatchcopy, 1,1);
                 if(rollret!=0){
                    freeFieldsCompletly(fields,ind+1);
-            return -2; 
+            		return -2; 
                 }
             }
         else if (strlen(tomatch)<fields[ind].min){
@@ -554,7 +556,7 @@ void showans(char* message, char* answer){
 	memset(copy,0,len);
 	while(1){
 		memset(token,0,len);
-		next = strchr(answer,'\n');
+		next = strchr(answer,'\x01');
 		strncat(token,answer,(unsigned int)(next-answer));
 		match = strstr(message,token);
 		if(match==NULL)
