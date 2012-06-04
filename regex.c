@@ -513,7 +513,8 @@ char* computeAlignement(Fields* fields,int options,int indFields,char* answer,ch
                	if((fields[i].subfields)->groupindex!=groupindex){
 		    if(!options || (options && strlen(tempans)) ){
 		        strcat(answer,tempans);
-               		strcat(answer,"\n");
+		        answer[strlen(answer)]=1;
+               	//strcat(answer,"\x01");
                	    }
                	    memset(tempans,0,len);
                     groupindex = (fields[i].subfields)->groupindex;
@@ -524,7 +525,8 @@ char* computeAlignement(Fields* fields,int options,int indFields,char* answer,ch
         if(!options || (options && strlen(tempans)) ){
 	    strcat(answer,tempans);
 	    if(cimplement)
-	        strcat(answer,"\n");
+	    	answer[strlen(answer)]=1;
+//	        strcat(answer,"\n");
         }
         free(tempans);
         return answer;
@@ -535,7 +537,7 @@ char* computeAlignement(Fields* fields,int options,int indFields,char* answer,ch
 }
 void retField(char *string,Fields* field,Subfield* sub,int options){
     field->subfields = sub->next;
-	if((!options) || (options && (sub->groupindex>0 || !field->isStatic))){
+	if((!options) || (options==1 && (sub->groupindex>0 || !field->isStatic)) || (options==2 && sub->groupindex>0)){
     	strncat(string,field->add+sub->offset,sub->len);
 	}
     dealloc((void **)&sub);
