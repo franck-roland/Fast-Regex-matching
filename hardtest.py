@@ -13,7 +13,7 @@ for r in reg:
         if len(r) < 100:
             print "Regex "+r
         print "SUCCESS"
-        print l.split('\n')
+        print l.split('\x01')
         print "Number of field "+str(len(l))
     except Exception, e:
         print ": ".join(e)
