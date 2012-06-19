@@ -1,7 +1,6 @@
 #ifndef REGEXP_H
 #define REGEXP_H
 
-#include "struct.h"
 #include "manipulate.h"
 #define couleur(param) printf("\033[%sm",param)
 
