@@ -28,7 +28,7 @@ PyObject* py_match(PyObject* self, PyObject* args) {
     char* regex;
     int indFields;
     int exactlymatch = 0;
-    Fields fields[MaxFields];
+    
     PyObject *recordedFields = NULL;
 	char *answer = NULL;
     // Converts the arguments
@@ -37,14 +37,12 @@ PyObject* py_match(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    indFields = matchandalign(&answer,regex,tomatch,fields,exactlymatch,0); 
-    if(indFields>=0)
-    {
+    indFields = matchandalign(&answer,regex,tomatch,exactlymatch,0); 
+    if(indFields>=0){
         recordedFields = PyString_FromString(answer);
         free(answer);
         return recordedFields;
     }
-    free(answer);
     char errormsg[]="Error append during alignment. See standard error output for more infos";      
     Py_XINCREF(exception);
     PyErr_SetObject(exception, Py_BuildValue("s",errormsg));

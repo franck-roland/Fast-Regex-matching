@@ -2,10 +2,17 @@
 
 char* mError = NULL;
 
-int matchandalign(char** answer,char* regex,char* tomatch,Fields* fields,int exactlymatch,int cimpl)
+/*************************
+*	answer: must be deallocated after the call to match and align iif succeeded
+*	regex: regex string
+*	tomatch: the string to match with the regex
+*
+**************************/
+int matchandalign(char** answer,char* regex,char* tomatch,int exactlymatch,int cimpl)
 {
 	int indFields;
-	*answer = (char*) calloc((strlen(tomatch)*2+1),sizeof(char));
+	Fields fields[MaxFields];
+
 	indFields = match(regex,tomatch,fields,exactlymatch);
 	if(indFields<0){
 		char* errormsg;
@@ -16,6 +23,7 @@ int matchandalign(char** answer,char* regex,char* tomatch,Fields* fields,int exa
 		return indFields;
 	}
 	else{
+		*answer = (char*) calloc((strlen(tomatch)*2+1),sizeof(char));
         computeAlignement(fields,exactlymatch,indFields,*answer,tomatch,cimpl);
         if (cimpl)
         	showans(tomatch, *answer);// print the answer
@@ -24,6 +32,14 @@ int matchandalign(char** answer,char* regex,char* tomatch,Fields* fields,int exa
 	
 
 }
+
+int matchonly(char** answer,char* regex,char* tomatch){
+	int indFields;
+	Fields fields[MaxFields];
+	indFields = match(regex,tomatch,fields,0);
+	return indFields;
+}
+
 char* createtoken(unsigned int size, char* from){
     char* nt;
     nt = (char *) calloc (size,sizeof(char));
