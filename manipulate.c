@@ -48,6 +48,13 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 	for(i=0;i<strlen(format);i++){
 		if(pAdd[0]==0)
 			break;
+			
+		//Skip spaces
+		while(pAdd[0]==' '){
+			pAdd++;
+			ind += 1;
+		}
+		
 		if(format[i]=='0'){
 			nextseparator=1;
 			len = 0;
@@ -80,12 +87,8 @@ int parseVariableFields(char *pAdd, int* m, int* M){
 			ind += len;
 		}
 		else{
-			if(pAdd[0]==' '){
-				pAdd++;
-				ind += 1;
-				i-=2;
-			}
-			else if(pAdd[0]==format[i]){
+			
+			if(pAdd[0]==format[i]){
 				if(nextseparator)
 					ismin = 0;
 				ind += 1;
