@@ -9,5 +9,5 @@ int match(char* s,char* tomatch,Fields* fields,int);
 void retField(char *string,Fields* field,Subfield* sub,int options);
 char* computeAlignement(Fields* fields,int options,int indFields,char* answer,char* message,int cimplement);
 void showans(char* message, char* answer);
-int matchonly(char** answer,char* regex,char* tomatch);
+int matchonly(char* regex,char* tomatch);
 #endif

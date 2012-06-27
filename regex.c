@@ -33,7 +33,7 @@ int matchandalign(char** answer,char* regex,char* tomatch,int exactlymatch,int c
 
 }
 
-int matchonly(char** answer,char* regex,char* tomatch){
+int matchonly(char* regex,char* tomatch){
 	int indFields;
 	Fields fields[MaxFields];
 	indFields = match(regex,tomatch,fields,0);
