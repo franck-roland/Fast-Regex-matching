@@ -142,6 +142,9 @@ int rollBack(unsigned int shift, int ind,Fields* fields, char* tomatch, int firs
             while(1){
                 if(!lastvar)
                     shift = (unsigned int)(stat->add - var->add - var->max);
+
+                printf("var %s\nshift %ld\n", var->add,shift);
+                printf("add %u add %u max %u\n", (unsigned int)stat->add,(unsigned int)var->add , var->max);
                 retvalue = rollBack(shift, ind - 2,fields,tomatch,0,0);
                 if( retvalue == 0){
                     var->add = fields[ind-1].add + fields[ind-1].len;
@@ -263,7 +266,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
     int last = 0;
     int groupindex = 0;
     int decalgroup_index = 0;
-	
+	printf("%s\n", regex);
     if(strlen(regex)<=0)
         return -4;
     if(strlen(tomatch)<=0)
@@ -363,7 +366,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
         for(i=0;i<nbsubtoken;i++){
             token=groups[i];
             //Very first field
-            if(fields[ind].set==0){
+            if(0==fields[ind].set){
             	groupindex -= (decalgroup_index+(!options)*(groupindex<0?1:0));
                 retvalue = newField(&fields[ind],isStatic(token,'.'),tomatch,token,maxlimit,groupindex);
                 if(retvalue<0){
@@ -384,6 +387,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                         if(posmatch!=tomatch){
                             freeFieldsCompletly(fields,ind+1);
                             freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
+                            printf("1 %s\n", regex);printf("%s\n", tomatch);
                             return -2;
                         }
                         else{
@@ -393,16 +397,21 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                     }
                     else{    
                         posmatch = strstr(tomatch+fields[ind-1].min,fields[ind].value);
+                        // Didn't found any substring value in to match shifted by min
+                        setAdd(&fields[ind],posmatch);
                         if(posmatch == NULL){
-	                        freeFieldsCompletly(fields,ind+1);
-	                        freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
+                            freeFieldsCompletly(fields,ind+1);
+                            freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
+                            printf("2 %s\n", regex);printf("%s\n", tomatch);
                             return -2;
                         }
+
                         else if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
                             rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
                             if(rollret!=0){
                                 freeFieldsCompletly(fields,ind+1);
                                 freeTokens(groups,i,nbsubtoken); //index == i as we didn't put the token anywhere for now
+                                printf("3 %s\n", regex);printf("%s\n%s\n", tomatch,tomatchcopy);
                                 return -2;
                             }
                             //fields[ind-1].len = (int)(fields[ind].add-fields[ind-1].add);
@@ -456,6 +465,7 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
             posmatch = strstr(tomatch,fields[ind].value);
             if(posmatch!=tomatch){
                 freeFieldsCompletly(fields,ind+1);
+                printf("5 %s\n", regex);printf("%s\n", tomatch);
                 return -2;
             }
             else{
@@ -464,24 +474,22 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
             }
         }
         else{    
-                posmatch = strstr(tomatch+fields[ind-1].min,fields[ind].value);
-                if(posmatch == NULL){
-                    freeFieldsCompletly(fields,ind+1);
-                    return -2;
-                }
-                    
                 if(strcmp(tomatch+(strlen(tomatch)-strlen(fields[ind].value)), fields[ind].value) != 0){
                     freeFieldsCompletly(fields,ind+1);
+                    printf("7 %s\n", regex);printf("%s\n", tomatch);
                     return -2;
                 }
+                
                 else{
                     posmatch = tomatch+(strlen(tomatch)-strlen(fields[ind].value));
                     setAdd(&fields[ind],posmatch);
-                }
+                }                    
+
                 if((unsigned int)(posmatch-tomatch)>fields[ind-1].max){
                     rollret = rollBack(0, ind-1,fields,tomatchcopy, 1,0);
                     if(rollret!=0){
                         freeFieldsCompletly(fields,ind+1);
+                        printf("8 %s\n", regex);printf("%s\n", tomatch);
                         return -2;
                     }
                     tomatch = fields[ind].add+fields[ind].len;
@@ -500,11 +508,13 @@ int match(char* regex,char* tomatch,Fields* fields,int options){
                 rollret = rollBack(strlen(tomatch)-fields[ind].max, ind,fields,tomatchcopy, 1,1);
                 if(rollret!=0){
                    freeFieldsCompletly(fields,ind+1);
+                   printf("9 %s\n", regex);printf("%s\n", tomatch);
             		return -2; 
                 }
             }
         else if (strlen(tomatch)<fields[ind].min){
                 freeFieldsCompletly(fields,ind+1);
+                printf("10 %s\n", regex);printf("%s\n", tomatch);
             return -2;
         }
         
